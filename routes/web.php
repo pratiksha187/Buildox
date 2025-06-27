@@ -57,3 +57,8 @@ Route::post('/subcategory/store', [AdminController::class, 'storeSubCategory'])-
 Route::get('/get-category-by-project-type/{id}', [AdminController::class, 'getCategoryByProjectType']);
 Route::post('/subcategory/delete/{id}', [AdminController::class, 'deleteSubCategory'])->name('subcategory.delete');
 
+Route::get('/project-details', [CoustomerController::class, 'project_details'])->name('project-details');
+Route::post('/project-details-store', [CoustomerController::class, 'project_details_store'])->name('project-details-store');
+Route::get('/conformation-page', [CoustomerController::class, 'conformation_page'])->name('conformation-page');
+
+Route::get('/customer-details-page', [CoustomerController::class, 'customer_details'])->name('customer_details');

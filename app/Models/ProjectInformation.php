@@ -17,6 +17,7 @@ class ProjectInformation extends Model
     'plot_ready',
     'project_type',
     'sub_categories',
+    'profile_image'
     ];
 
     protected $casts = [

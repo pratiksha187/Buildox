@@ -12,6 +12,7 @@ class ProjectDetails extends Model
     protected $fillable = [
         'project_name',
         'project_type',
+        'project_location',
         'project_description',
         'budget_range',
         'expected_timeline',

@@ -19,32 +19,18 @@
                  class="w-full border border-gray-300 rounded-md p-2 focus:outline-none focus:ring-2 focus:ring-indigo-500">
         </div>
         <div>
-          <label class="block text-sm font-medium mb-1">Project Type</label>
-          <select id="project_type" name="project_type" class="w-full border border-gray-300 rounded-md p-2 focus:outline-none focus:ring-2 focus:ring-indigo-500">
-            <option>Select project type</option>
-            <!-- Populate with actual types -->
-          </select>
+          <label class="block text-sm font-medium mb-1">Project Location</label>
+         
+          <input type="text" placeholder="Enter project Location" id="project_location" name="project_location"
+                 class="w-full border border-gray-300 rounded-md p-2 focus:outline-none focus:ring-2 focus:ring-indigo-500">
         </div>
       </div>
 
-      <!-- Description -->
-      <div>
-        <label class="block text-sm font-medium mb-1">Project Description</label>
-        <textarea id="project_description" name="project_description" rows="4" placeholder="Describe your project in detail"
-                  class="w-full border border-gray-300 rounded-md p-2 focus:outline-none focus:ring-2 focus:ring-indigo-500"></textarea>
-      </div>
-
-      <!-- Budget & Timeline -->
       <div class="grid md:grid-cols-2 gap-6">
         <div>
-          <label class="block text-sm font-medium mb-1">Budget Range (IND)</label>
-          <select id="budget_range" name="budget_range"  class="w-full border border-gray-300 rounded-md p-2 focus:outline-none focus:ring-2 focus:ring-indigo-500">
-            <option>Select budget range</option>
-            <option value="1">₹10000-₹20000</option>
-            <option value="2">₹40000-₹60000</option>
-            <option value="3">₹80000-₹100000</option>
-            <!-- Populate with actual ranges -->
-          </select>
+          <label class="block text-sm font-medium mb-1">Estimated Budget</label>
+           <input type="text" placeholder="Enter project Location" id="budget_range" name="budget_range"
+                 class="w-full border border-gray-300 rounded-md p-2 focus:outline-none focus:ring-2 focus:ring-indigo-500">
         </div>
         <div>
           <label class="block text-sm font-medium mb-1">Expected Timeline</label>
@@ -58,8 +44,12 @@
           </select>
         </div>
       </div>
-
-      <!-- File Upload -->
+      <div>
+        <label class="block text-sm font-medium mb-1">Project Description</label>
+        <textarea id="project_description" name="project_description" rows="4" placeholder="Describe your project in detail"
+                  class="w-full border border-gray-300 rounded-md p-2 focus:outline-none focus:ring-2 focus:ring-indigo-500"></textarea>
+      </div>
+      
       <div>
         <label class="block text-sm font-medium mb-2">Upload Project Documents</label>
         <div class="border-2 border-dashed border-gray-300 p-6 rounded-md text-center">
@@ -113,7 +103,9 @@
             alert(response.message);
 
             // Redirect to confirmation page
-            window.location.href = '{{ route("conformation-page") }}';
+            // window.location.href = '{{ route("conformation-page") }}';
+            window.location.href = '{{ route("customer_details") }}';
+
           },
           error: function(xhr) {
             const errors = xhr.responseJSON.errors;
