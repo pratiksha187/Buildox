@@ -1,0 +1,20 @@
+<?php
+
+namespace App\Models;
+
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+
+class ProjectDetails extends Model
+{
+    use HasFactory;
+    protected $table = 'projects_details';
+    protected $fillable = [
+        'project_name',
+        'project_type',
+        'project_description',
+        'budget_range',
+        'expected_timeline',
+        'file_path',
+    ];
+}
