@@ -15,11 +15,15 @@ class ProjectInformation extends Model
     'role',
     'construction_type',
     'plot_ready',
+    'project_type',
+    'sub_categories',
     ];
 
     protected $casts = [
-        'construction_type' => 'array',
-        'plot_ready' => 'boolean',
-    ];
+    'sub_categories' => 'array',
+    'plot_ready' => 'boolean',
+];
+
+
 
 }

@@ -46,9 +46,9 @@
           <span class="material-icons" x-text="sections.category ? 'expand_less' : 'expand_more'"></span>
         </button>
         <ul x-show="sections.category" x-transition class="pl-3 mt-2 space-y-2" x-cloak>
-          <li><a href="{{ route('vender_approve_form') }}" class="block px-3 py-2 hover:bg-gray-800 rounded">Category</a></li>
-          <li><a href="{{ route('vender_approve_data') }}" class="block px-3 py-2 hover:bg-gray-800 rounded">Sub Category</a></li>
-          <li><a href="{{ route('vender_reject_data') }}" class="block px-3 py-2 hover:bg-gray-800 rounded">Sub Sub Category</a></li>
+          <li><a href="{{ route('construction_type') }}" class="block px-3 py-2 hover:bg-gray-800 rounded">Construction Type</a></li>
+          <li><a href="{{ route('project_type') }}" class="block px-3 py-2 hover:bg-gray-800 rounded">Project Type</a></li>
+          <li><a href="{{ route('const_sub_cat') }}" class="block px-3 py-2 hover:bg-gray-800 rounded">Construction Sub-Category</a></li>
         </ul>
       </div>
 

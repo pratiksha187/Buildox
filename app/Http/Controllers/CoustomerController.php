@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 use App\Models\ProjectInformation;
 use App\Models\ProjectDetails;
 use App\Models\ProjectInquiry;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Http\Request;
 
 class CoustomerController extends Controller
@@ -11,39 +12,105 @@ class CoustomerController extends Controller
     public function home(){
         return view('home');
     }
-    public function project(){
-        return view('customer.project');
-    }
-
-    public function store(Request $request)
+   
+    public function project()
     {
-        $validated = $request->validate([
-            'full_name' => 'required|string|max:255',
-            'phone_number' => 'required|string|max:20',
-            'email' => 'nullable|email|max:255',
-            'role' => 'required|integer',
-            'construction_type' => 'required|array',
-            'plot_ready' => 'required|boolean',
-        ]);
+        // Assuming your construction types are stored in a `construction_types` table
+        $construction_types = DB::table('categories')->orderBy('id')->get();
 
-        // Check if a record with the same phone number already exists
-        $exists = ProjectInformation::where('phone_number', $validated['phone_number'])->exists();
-
-        if ($exists) {
-            return response()->json([
-                'message' => 'This phone number has already been submitted.',
-                'status' => 'exists'
-            ], 409); // 409 Conflict
-        }
-
-        // Save new data
-        ProjectInformation::create($validated);
-
-        return response()->json([
-            'message' => 'Saved successfully',
-            'status' => 'success'
-        ]);
+        return view('customer.project', compact('construction_types'));
     }
+
+    public function getProjectTypes($constructionTypeId)
+    {
+        $projectTypes = DB::table('project_types')
+            ->where('category_id', $constructionTypeId)
+            ->select('id', 'name')
+            ->get();
+
+        return response()->json($projectTypes);
+    }
+
+    public function getSubcategories($project_type_id)
+    {
+        $subs = DB::table('construction_sub_categories')
+                ->where('project_type_id', $project_type_id)
+                ->get(['id', 'name']);
+
+        return response()->json($subs);
+    }
+
+   public function store(Request $request)
+{
+    $validated = $request->validate([
+        'full_name' => 'required|string|max:255',
+        'phone_number' => 'required|string|max:20',
+        'email' => 'nullable|email|max:255',
+        'role' => 'required',
+        'construction_type' => 'required',
+        'project_type' => 'required',
+        'sub_categories' => 'nullable|array',
+        'plot_ready' => 'required|boolean',
+    ]);
+
+    // Check for duplicate
+    if (ProjectInformation::where('phone_number', $validated['phone_number'])->exists()) {
+        return response()->json([
+            'status' => 'exists',
+            'message' => 'This phone number has already been submitted.'
+        ], 409);
+    }
+
+    // Save the record
+    ProjectInformation::create([
+        'full_name' => $validated['full_name'],
+        'phone_number' => $validated['phone_number'],
+        'email' => $validated['email'],
+        'role' => $validated['role'],
+        'construction_type' => $validated['construction_type'],  // <-- FIXED
+        'plot_ready' => $validated['plot_ready'],
+        'project_type' =>$validated['project_type'],
+        'sub_categories' => $request->has('sub_categories') ? json_encode($request->sub_categories) : null,
+    ]);
+
+    return response()->json([
+        'status' => 'success',
+        'message' => 'Saved successfully',
+    ]);
+}
+
+
+
+
+    // public function store(Request $request)
+    // {
+    //     $validated = $request->validate([
+    //         'full_name' => 'required|string|max:255',
+    //         'phone_number' => 'required|string|max:20',
+    //         'email' => 'nullable|email|max:255',
+    //         'role' => 'required|integer',
+    //         'construction_type' => 'required|array',
+    //         'plot_ready' => 'required|boolean',
+    //     ]);
+
+    //     // Check if a record with the same phone number already exists
+    //     $exists = ProjectInformation::where('phone_number', $validated['phone_number'])->exists();
+
+    //     if ($exists) {
+    //         return response()->json([
+    //             'message' => 'This phone number has already been submitted.',
+    //             'status' => 'exists'
+    //         ], 409); // 409 Conflict
+    //     }
+
+    //     // Save new data
+    //     ProjectInformation::create($validated);
+
+    //     return response()->json([
+    //         'message' => 'Saved successfully',
+    //         'status' => 'success'
+    //     ]);
+    // }
 
     public function more_about_project(){
         return view('customer.more_about_project');
