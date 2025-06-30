@@ -12,6 +12,8 @@ class ProjectInformation extends Model
     'full_name',
     'phone_number',
     'email',
+    'password',
+    'login_id',
     'role',
     'construction_type',
     'plot_ready',

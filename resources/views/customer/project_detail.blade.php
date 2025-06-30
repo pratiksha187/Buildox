@@ -10,7 +10,10 @@
   <div class="max-w-4xl mx-auto p-6 bg-white shadow-md rounded-xl mt-10">
     <h2 class="text-2xl font-semibold mb-6">Upload Your Project Details</h2>
 
-    <form id="projectForm" class="space-y-6">
+    <form id="projectForm" class="space-y-6" method="POST" enctype="multipart/form-data">
+     {{-- <input type="hidden" name="project_id" id="project_id" value="{{ $project }}"> --}}
+    <input type="hidden" name="project_id" id="project_id" value="{{ $project->id }}">
+
       <!-- Project Name & Type -->
       <div class="grid md:grid-cols-2 gap-6">
         <div>
@@ -88,7 +91,7 @@
         e.preventDefault();
 
         var formData = new FormData(this);
-
+        const projectId = $('#project_id').val();
         $.ajax({
           url: '{{ route("project-details-store") }}',
           method: 'POST',
@@ -102,9 +105,10 @@
             // Optional: show a message
             alert(response.message);
 
-            // Redirect to confirmation page
-            // window.location.href = '{{ route("conformation-page") }}';
-            window.location.href = '{{ route("customer_details") }}';
+          
+          window.location.href = '{{ route("customer_details") }}' + '?project_id=' + projectId;
+
+            // window.location.href = '{{ route("customer_details") }}';
 
           },
           error: function(xhr) {

@@ -11,6 +11,9 @@ class ProjectDetails extends Model
     protected $table = 'projects_details';
     protected $fillable = [
         'project_name',
+        'confirm',
+        'project_id',
+        'submission_id',
         'project_type',
         'project_location',
         'project_description',

@@ -5,6 +5,7 @@ use App\Models\ProjectInformation;
 use App\Models\ProjectDetails;
 use App\Models\ProjectInquiry;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Hash;
 use Illuminate\Http\Request;
 
 class CoustomerController extends Controller
@@ -40,52 +41,13 @@ class CoustomerController extends Controller
         return response()->json($subs);
     }
 
-//    public function store(Request $request)
-//     {
-//         $validated = $request->validate([
-//             'full_name' => 'required|string|max:255',
-//             'phone_number' => 'required|string|max:20',
-//             'email' => 'nullable|email|max:255',
-//             'role' => 'required',
-//             'construction_type' => 'required',
-//             'project_type' => 'required',
-//             'sub_categories' => 'nullable|array',
-//             'plot_ready' => 'required|boolean',
-//             'profile_image' => 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:2048', // Image validation
-//         ]);
-
-//         // Check for duplicate
-//         if (ProjectInformation::where('phone_number', $validated['phone_number'])->exists()) {
-//             return response()->json([
-//                 'status' => 'exists',
-//                 'message' => 'This phone number has already been submitted.'
-//             ], 409);
-//         }
-
-//         // Save the record
-//         ProjectInformation::create([
-//             'full_name' => $validated['full_name'],
-//             'phone_number' => $validated['phone_number'],
-//             'email' => $validated['email'],
-//             'role' => $validated['role'],
-//             'construction_type' => $validated['construction_type'],  // <-- FIXED
-//             'plot_ready' => $validated['plot_ready'],
-//             'project_type' =>$validated['project_type'],
-//             'sub_categories' => $request->has('sub_categories') ? json_encode($request->sub_categories) : null,
-//         ]);
-
-//         return response()->json([
-//             'status' => 'success',
-//             'message' => 'Saved successfully',
-//         ]);
-//     }
-
     public function store(Request $request)
     {
         $validated = $request->validate([
             'full_name' => 'required|string|max:255',
             'phone_number' => 'required|string|max:20',
             'email' => 'nullable|email|max:255',
+            'password' => 'required',
             'role' => 'required',
             'construction_type' => 'required',
             'project_type' => 'required',
@@ -109,38 +71,44 @@ class CoustomerController extends Controller
         }
 
         // Save to DB
-        ProjectInformation::create([
+        $project = ProjectInformation::create([
             'full_name' => $validated['full_name'],
             'phone_number' => $validated['phone_number'],
             'email' => $validated['email'],
+            'password' =>  Hash::make($validated['password']),
             'role' => $validated['role'],
             'construction_type' => $validated['construction_type'],
             'project_type' => $validated['project_type'],
             'sub_categories' => $request->has('sub_categories') ? json_encode($request->sub_categories) : null,
             'plot_ready' => $validated['plot_ready'],
-            'profile_image' => $imagePath, // Save image path if available
+            'profile_image' => $imagePath,
+            'login_id' => 3
         ]);
 
         return response()->json([
             'status' => 'success',
             'message' => 'Saved successfully',
+            'project_id' => $project->id,
         ]);
     }
+
 
     public function more_about_project(){
         return view('customer.more_about_project');
     }
 
-    public function project_details(){
-        return view('customer.project_detail');
+    public function project_details($id){
+        $project = ProjectInformation::findOrFail($id);
+        //  return view('project.details', compact('project'));
+        return view('customer.project_detail', compact('project'));
     }
 
     public function project_details_store(Request $request)
     {
         // Validate the request
         $validated = $request->validate([
-            // 'project_name' => 'required|string|max:255|unique:project_name',
-
+           
+            'project_id' => 'required|integer|exists:project_information,id',
             'project_name' => 'required|string|max:255',
             'project_location' => 'required|string',
             'project_description' => 'required|string',
@@ -150,7 +118,7 @@ class CoustomerController extends Controller
             'upload.*' => 'mimes:pdf,doc,jpg,png|max:10240',
         ]);
 
-        // Check if project with same name already exists
+     
         $exists = ProjectDetails::where('project_name', $validated['project_name'])->exists();
 
         if ($exists) {
@@ -167,7 +135,12 @@ class CoustomerController extends Controller
             }
         }
 
-        // Create record
+        $year = now()->year;
+        $prefix = 'BX'; 
+
+        $count = ProjectDetails::whereYear('created_at', $year)->count() + 1;
+        $code = sprintf('%s-%d-%03d', $prefix, $year, $count);
+        
         ProjectDetails::create([
             'project_name' => $validated['project_name'],
             'project_location' => $validated['project_location'],
@@ -175,20 +148,57 @@ class CoustomerController extends Controller
             'budget_range' => $validated['budget_range'],
             'expected_timeline' => $validated['expected_timeline'],
             'file_path' => json_encode($filePaths),
-        ]);
+            'project_id' =>$validated['project_id'],
+            'submission_id' => $code,
+        ]); 
 
         return response()->json([
             'message' => 'Project details submitted successfully!'
         ]);
     }
 
-    public function conformation_page(){
-        return view('customer.conformation_page');
+         // Controller
+    public function storeProjectSession(Request $request)
+    {
+        session(['project_id' => $request->project_id]);
+        return response()->json(['success' => true]);
     }
 
-    public function customer_dashboard(){
-         return view('customer.customer_dashboard');
+    public function conformation_page(Request $request){
+        // $project_id = $request->query('project_id'); 
+        $project_id = session('project_id');
+        if (!$project_id) {
+            return redirect()->back()->withErrors('Project ID not found');
+        }
+        $get_project_det = DB::table('projects_details')
+                        ->where('id', $project_id)
+                        ->first();
+
+                // print_r($get_project_det);die;
+        return view('customer.conformation_page', compact('project_id','get_project_det'));
     }
+
+   
+    public function customer_dashboard()
+    {
+        $project_id = session('project_id');
+    // print_r($project_id);die;
+        $get_project_det = DB::table('projects_details')
+            ->where('id', $project_id)
+            ->get();
+        // print_r($get_project_det);die;
+        $firstProject = $get_project_det->first();
+
+        if (!$firstProject) {
+            return redirect()->back()->with('error', 'Project not found.');
+        }
+
+        $proj_data = DB::table('project_information')
+            ->where('id', $firstProject->project_id)
+            ->first();
+        return view('customer.customer_dashboard', compact('project_id', 'proj_data', 'get_project_det'));
+    }
+
 
     public function need_help(){
         return view('customer.about_project');
@@ -221,9 +231,30 @@ class CoustomerController extends Controller
     ]);
     }
 
-
-    public function customer_details(){
-        return view('customer.customer_details');
+    public function customer_details()
+    {
+        $project = DB::table('projects_details')->latest('id')->first();
+        return view('customer.customer_details', compact('project'));
     }
+
+
+   public function updateAction(Request $request)
+    {
+        $request->validate([
+            'project_id' => 'required|integer',
+            'confirm' => 'required|integer',
+        ]);
+
+        $updated = DB::table('projects_details')
+            ->where('id', $request->project_id)
+            ->update(['confirm' => $request->confirm]);
+
+        // Return success even if 0 rows changed (value already set)
+        return response()->json([
+            'status' => 'success',
+            'message' => $updated ? 'Updated successfully' : 'No change needed'
+        ]);
+    }
+
 
 }

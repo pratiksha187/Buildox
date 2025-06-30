@@ -63,23 +63,20 @@
 <div class="card card-custom text-center">
   <div class="card-header-custom">
     <div class="emoji-icon">🎉</div>
-      <input type="text" name="project_id" value="{{ $project_id }}">
 
   </div>
   <div class="card-body p-4">
     <h4 class="fw-bold mb-3">Thank you! Your request has been submitted.</h4>
     <p class="text-muted mb-4">
-      Your project has been received and is now under review by the BuildXO team.
+      Your Business Information has been received and is now under review by the BuildXO team.
     </p>
 
     <div class="highlight-box text-start">
       <p><strong>⏱ Expected Response:</strong> Within 24 working hours</p>
       <p><strong>📞 Next Step:</strong> Our executive will reach out to you if needed</p>
-      <p><strong>📁 Submission ID:</strong> {{ $get_project_det->submission_id }}</p>
-
+      <p><strong>📁 Submission ID:</strong> BX-2025-001</p>
     </div>
 
-    <!-- <a href="#" class="btn btn-custom">Go to My Dashboard</a> -->
     <a href="{{ route('customer.dashboard') }}" class="btn btn-custom">Go to My Dashboard</a>
 
   </div>

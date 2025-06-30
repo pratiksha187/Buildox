@@ -30,10 +30,13 @@
                     class="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded-md transition duration-200">
                 Login
             </button>
+            <a href="{{ route("home") }}"
+                class="block text-center text-sm text-blue-600 hover:underline mt-4">
+                ← Back to Register page
+            </a>
+
         </form>
-        <p class="text-center text-sm text-gray-500 mt-4">Don't have an account?
-            <a href="/register" class="text-blue-600 hover:underline">Register</a>
-        </p>
+       
     </div>
 </body>
 </html>

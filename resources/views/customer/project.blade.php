@@ -40,7 +40,7 @@
       <h4>Tell us about your project</h4>
     </div>
 
-    <form id="projectForm"  method="POST" enctype="multipart/form-data">
+    <form id="projectForm" method="POST" enctype="multipart/form-data">
       <div class="row mb-3">
         <div class="col-md-6">
           <label class="form-label">Full Name</label>
@@ -54,19 +54,21 @@
 
       <div class="row mb-3">
         <div class="col-md-6">
-          <label class="form-label">Email </label>
+          <label class="form-label">Email</label>
           <input type="email" name="email" id="email" class="form-control" placeholder="Enter email">
         </div>
-        
+        <div class="col-md-6">
+          <label class="form-label">Password</label>
+          <input type="password" name="password" id="password" class="form-control" placeholder="Enter password">
+        </div>
+      </div>
+
+      <div class="row mb-3">
         <div class="col-md-6">
           <label for="profile_image" class="form-label">Select Profile Image</label>
           <input type="file" class="form-control" id="profile_image" name="profile_image" accept="image/*">
         </div>
-
-      </div>
-
-      <div class="row">
-        <div class="col-md-6 mb-3">
+        <div class="col-md-6">
           <label for="role" class="form-label">Select Your Role</label>
           <select class="form-select" id="role" name="role">
             <option selected disabled>Choose your role</option>
@@ -78,35 +80,32 @@
             <option value="6">Hospitality Owner</option>
           </select>
         </div>
+      </div>
 
-        <div class="col-md-6 mb-3">
+      <div class="row mb-3">
+        <div class="col-md-6">
           <label for="construction_type" class="form-label">Type of Vendor Needed</label>
-         
-          <select id="construction_type" name='construction_type' class="form-select">
+          <select id="construction_type" name="construction_type" class="form-select">
             <option value="">Select Construction Type</option>
             @foreach($construction_types as $type)
               <option value="{{ $type->id }}">{{ $type->name }}</option>
             @endforeach
           </select>
         </div>
+        <div class="col-md-6">
+          <label for="project_type" class="form-label">Select Project Type</label>
+          <select id="project_type" name="project_type" class="form-select mt-3">
+            <option value="">Select Project Type</option>
+          </select>
+        </div>
       </div>
 
-      <div class="col-md-6 mb-3">
-        <label for="project_type" class="form-label">Select Project Type</label>
-        
-        <select id="project_type" name="project_type" class="form-select mt-3">
-          <option value="">Select Project Type</option>
-        </select>
-      </div>
-
-      <div id="sub_categories_container" class="col-md-6 mb-3" style="display: none;">
-        <label class="form-label fw-bold" id="sub_category_title"></label>
-        
-        Select Sub-Categories
-       <div id="sub_categories" name="sub_categories" class="form-check d-flex flex-column gap-2 mt-2">
-        
-      </div>
-
+      <div class="row mb-3">
+        <div id="sub_categories_container" class="col-md-6" style="display: none;">
+          <label class="form-label fw-bold" id="sub_category_title"></label>
+          Select Sub-Categories
+          <div id="sub_categories" name="sub_categories" class="form-check d-flex flex-column gap-2 mt-2"></div>
+        </div>
       </div>
 
       <div class="form-check form-switch mb-4">
@@ -123,174 +122,103 @@
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
 
-<script> 
-// $(document).ready(function () {
-//   $('#projectForm').on('submit', function (e) {
-//     e.preventDefault();
-
-//     // Collect sub-category checkbox values
-//     let selectedSubCategories = [];
-//     $('input[name="sub_categories[]"]:checked').each(function () {
-//       selectedSubCategories.push($(this).val());
-//     });
-
-//     const formData = {
-//       full_name: $('#full_name').val(),
-//       phone_number: $('#phone_number').val(),
-//       email: $('#email').val(),
-//       role: $('#role').val(),
-//       construction_type: $('#construction_type').val(),
-//       project_type: $('#project_type').val(),
-//       sub_categories: selectedSubCategories,
-//       plot_ready: $('#plot_ready').is(':checked') ? 1 : 0,
-//     };
-
-//     $.ajax({
-//       url: '{{ route('projectinfostore') }}',
-//       method: 'POST',
-//       data: formData,
-//       headers: {
-//         'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-//       },
-//       success: function (response) {
-//         if (response.status === 'success') {
-//           alert(response.message);
-//           $('#projectForm')[0].reset();
-//           $('#construction_type').val(null).trigger('change');
-//           $('#project_type').empty().append('<option value="">Select Project Type</option>');
-//           $('#sub_categories').empty();
-//           $('#sub_categories_container').hide();
-//           // window.location.href = '{{ route("more-about-project") }}';
-//           window.location.href = '{{ route("project-details") }}';
-         
-//         }
-//       },
-//       error: function (xhr) {
-//         if (xhr.status === 409 && xhr.responseJSON.status === 'exists') {
-//           alert(xhr.responseJSON.message);
-//           return;
-//         }
-
-//         const errors = xhr.responseJSON.errors;
-//         if (errors) {
-//           $('.is-invalid').removeClass('is-invalid');
-//           $('.invalid-feedback').remove();
-
-//           $.each(errors, function (field, messages) {
-//             const inputField = $('#' + field);
-//             inputField.addClass('is-invalid');
-//             inputField.after('<div class="invalid-feedback">' + messages.join('<br>') + '</div>');
-//           });
-//         } else {
-//           alert('An unexpected error occurred. Please try again.');
-//         }
-//       }
-//     });
-//   });
-// });
-$(document).ready(function () {
-  $('#projectForm').on('submit', function (e) {
-    e.preventDefault();
-
-    let form = this;
-    let formData = new FormData(form);
-
-    // Checkbox value handling
-    formData.set('plot_ready', $('#plot_ready').is(':checked') ? 1 : 0);
-
-    // Clear and re-append checked sub-categories
-    formData.delete('sub_categories[]');
-    $('input[name="sub_categories[]"]:checked').each(function () {
-      formData.append('sub_categories[]', $(this).val());
-    });
-
-    $.ajax({
-      url: '{{ route('projectinfostore') }}',
-      method: 'POST',
-      data: formData,
-      processData: false,
-      contentType: false,
-      headers: {
-        'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-      },
-      success: function (response) {
-        if (response.status === 'success') {
-          alert(response.message);
-          $('#projectForm')[0].reset();
-          $('#construction_type').val(null).trigger('change');
-          $('#project_type').empty().append('<option value="">Select Project Type</option>');
-          $('#sub_categories').empty();
-          $('#sub_categories_container').hide();
-          window.location.href = '{{ route("project-details") }}';
-        }
-      },
-      error: function (xhr) {
-        if (xhr.status === 409 && xhr.responseJSON.status === 'exists') {
-          alert(xhr.responseJSON.message);
-          return;
-        }
-
-        const errors = xhr.responseJSON.errors;
-        if (errors) {
-          $('.is-invalid').removeClass('is-invalid');
-          $('.invalid-feedback').remove();
-
-          $.each(errors, function (field, messages) {
-            const inputField = $('#' + field);
-            inputField.addClass('is-invalid');
-            inputField.after('<div class="invalid-feedback">' + messages.join('<br>') + '</div>');
-          });
-        } else {
-          alert('An unexpected error occurred. Please try again.');
-        }
-      }
-    });
-  });
-});
-</script>
-
-
 <script>
   $(document).ready(function () {
-  $('#construction_type').on('change', function () {
-    let id = $(this).val();
-    $('#project_type').empty().append('<option value="">Select Project Type</option>');
-    $('#subcategory').empty().append('<option value="">Select Subcategory</option>');
+    $('#projectForm').on('submit', function (e) {
+      e.preventDefault();
 
-    if (id) {
-      $.get('/get-project-types/' + id, function (data) {
-        $.each(data, function (i, type) {
-          $('#project_type').append(`<option value="${type.id}">${type.name}</option>`);
-        });
+      let form = this;
+      let formData = new FormData(form);
+
+      // Checkbox value
+      formData.set('plot_ready', $('#plot_ready').is(':checked') ? 1 : 0);
+
+      // Handle sub-categories
+      formData.delete('sub_categories[]');
+      $('input[name="sub_categories[]"]:checked').each(function () {
+        formData.append('sub_categories[]', $(this).val());
       });
-    }
-  });
 
-  
-  $('#project_type').on('change', function () {
-  let id = $(this).val();
-  const container = $('#sub_categories');
-  container.empty(); // Clear old checkboxes
-  $('#sub_categories_container').hide(); // Hide initially
+      $.ajax({
+        url: '{{ route('projectinfostore') }}',
+        method: 'POST',
+        data: formData,
+        processData: false,
+        contentType: false,
+        headers: {
+          'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+        },
+        success: function (response) {
+          if (response.status === 'success') {
+            alert(response.message);
+            $('#projectForm')[0].reset();
+            $('#construction_type').val(null).trigger('change');
+            $('#project_type').empty().append('<option value="">Select Project Type</option>');
+            $('#sub_categories').empty();
+            $('#sub_categories_container').hide();
+            $('#project_id').val(response.project_id);
+            window.location.href = '/project-details/' + response.project_id;
+          }
+        },
+        error: function (xhr) {
+          if (xhr.status === 409 && xhr.responseJSON.status === 'exists') {
+            alert(xhr.responseJSON.message);
+            return;
+          }
 
-  if (id) {
-    $.get('/get-subcategories/' + id, function (data) {
-      if (data.length > 0) {
-        data.forEach(sub => {
-          const checkboxHTML = `
-            <div class="form-check">
-              <input class="form-check-input" type="checkbox" id="subcat_${sub.id}" name="sub_categories[]" value="${sub.id}">
-              <label class="form-check-label" for="subcat_${sub.id}">${sub.name}</label>
-            </div>`;
-          container.append(checkboxHTML);
+          const errors = xhr.responseJSON.errors;
+          if (errors) {
+            $('.is-invalid').removeClass('is-invalid');
+            $('.invalid-feedback').remove();
+
+            $.each(errors, function (field, messages) {
+              const inputField = $('#' + field);
+              inputField.addClass('is-invalid');
+              inputField.after('<div class="invalid-feedback">' + messages.join('<br>') + '</div>');
+            });
+          } else {
+            alert('An unexpected error occurred. Please try again.');
+          }
+        }
+      });
+    });
+
+    $('#construction_type').on('change', function () {
+      let id = $(this).val();
+      $('#project_type').empty().append('<option value="">Select Project Type</option>');
+      $('#subcategory').empty().append('<option value="">Select Subcategory</option>');
+
+      if (id) {
+        $.get('/get-project-types/' + id, function (data) {
+          $.each(data, function (i, type) {
+            $('#project_type').append(`<option value="${type.id}">${type.name}</option>`);
+          });
         });
-        $('#sub_categories_container').show();
       }
     });
-  }
-});
 
-});
+    $('#project_type').on('change', function () {
+      let id = $(this).val();
+      const container = $('#sub_categories');
+      container.empty();
+      $('#sub_categories_container').hide();
 
-  </script>
+      if (id) {
+        $.get('/get-subcategories/' + id, function (data) {
+          if (data.length > 0) {
+            data.forEach(sub => {
+              const checkboxHTML = `
+                <div class="form-check">
+                  <input class="form-check-input" type="checkbox" id="subcat_${sub.id}" name="sub_categories[]" value="${sub.id}">
+                  <label class="form-check-label" for="subcat_${sub.id}">${sub.name}</label>
+                </div>`;
+              container.append(checkboxHTML);
+            });
+            $('#sub_categories_container').show();
+          }
+        });
+      }
+    });
+  });
+</script>
 @endsection

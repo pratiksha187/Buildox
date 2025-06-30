@@ -1,5 +1,5 @@
 
-  @extends('layouts.app')
+@extends('layouts.app')
 
 @section('title', 'Select Your Role')
 
@@ -16,7 +16,7 @@
         <div class="role-desc">Find experts, get quotes, manage construction</div>
       </a>
 
-      <a href="{{ route('service-provider') }}" class="role-card service-role">
+      <a href="{{ route('service_provider') }}" class="role-card service-role">
         <div class="role-icon">👷</div>
         <div class="role-title">I’m a service provider</div>
         <div class="role-desc">Get leads, bid on projects, grow your business</div>

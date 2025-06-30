@@ -7,7 +7,7 @@
   <script src="https://cdn.tailwindcss.com"></script>
 </head>
 <body class="bg-gray-100 min-h-screen flex items-center justify-center">
-
+ <input type="text" name="project_id" id="project_id" value="{{ $project->id }}">
   <div class="bg-white rounded-xl shadow-lg max-w-2xl w-full p-6">
     <!-- Header -->
     <div class="text-center mb-6">
@@ -15,55 +15,30 @@
       <p class="text-gray-500 text-sm">Select your project details to get started with your construction needs</p>
     </div>
 
-    <!-- Stepper -->
-    <div class="flex justify-between items-center mb-6">
-      <div class="flex flex-col items-center text-green-600">
-        <div class="w-8 h-8 rounded-full bg-green-500 text-white flex items-center justify-center text-sm font-bold">1</div>
-        <span class="text-sm mt-1">Project Type</span>
-      </div>
-      <div class="flex-1 h-1 bg-green-500 mx-2"></div>
-      <div class="flex flex-col items-center text-green-600">
-        <div class="w-8 h-8 rounded-full bg-green-500 text-white flex items-center justify-center text-sm font-bold">2</div>
-        <span class="text-sm mt-1">Details</span>
-      </div>
-      <div class="flex-1 h-1 bg-blue-500 mx-2"></div>
-      <div class="flex flex-col items-center text-blue-600">
-        <div class="w-8 h-8 rounded-full bg-blue-500 text-white flex items-center justify-center text-sm font-bold">3</div>
-        <span class="text-sm mt-1">Summary</span>
-      </div>
-    </div>
-
     <!-- Summary Box -->
     <div class="bg-blue-50 p-4 rounded-md mb-6">
       <h3 class="text-blue-700 font-semibold text-lg mb-3">Project Summary</h3>
       <div class="grid grid-cols-2 gap-4 text-sm text-gray-700">
-        <div>
-          <p class="font-medium">Project Type</p>
-          <p>Commercial Construction</p>
-        </div>
-        <div>
-          <p class="font-medium">Sub-Category</p>
-          <p>Office Space / Co-working</p>
-        </div>
+      
         <div>
           <p class="font-medium">Project Name</p>
-          <p>-</p>
+          <p>{{ $project->project_name ?? '-' }}</p>
         </div>
         <div>
           <p class="font-medium">Location</p>
-          <p>-</p>
+          <p>{{ $project->project_location ?? '-' }}</p>
         </div>
         <div>
           <p class="font-medium">Budget</p>
-          <p>-</p>
+          <p>{{ $project->budget_range ?? '-' }}</p>
         </div>
         <div>
           <p class="font-medium">Timeline</p>
-          <p>-</p>
+          <p>{{ $project->expected_timeline ?? '-' }}</p>
         </div>
         <div class="col-span-2">
           <p class="font-medium">Description</p>
-          <p>-</p>
+          <p>{{ $project->project_description ?? '-' }}</p>
         </div>
       </div>
     </div>
@@ -85,9 +60,63 @@
 
     <!-- Submit Button -->
     <div class="text-right">
-      <button class="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 transition">Submit Request</button>
+      {{-- <button class="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 transition">Submit Request</button> --}}
+      <button id="submitRequestBtn" class="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 transition">
+        Submit Request
+      </button>
+
     </div>
   </div>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+<script>
+  $(document).ready(function () {
+    $('#submitRequestBtn').on('click', function () {
+      const project_id = '{{ $project->id }}'; // Make sure this is available from Blade
+
+      $.ajax({
+      url: '{{ route("update.project.action") }}',
+      method: 'POST',
+      data: {
+        project_id: project_id,
+        confirm: 1
+      },
+      headers: {
+        'X-CSRF-TOKEN': '{{ csrf_token() }}'
+      },
+      success: function (response) {
+        // Save project_id to session using another request
+        $.post('{{ route("store.project.session") }}', {
+          project_id: project_id,
+          _token: '{{ csrf_token() }}'
+        }, function () {
+          window.location.href = '{{ route("conformation-page") }}';
+        });
+      }
+    });
+
+      // $.ajax({
+      //   url: '{{ route("update.project.action") }}',
+      //   method: 'POST',
+      //   data: {
+      //     project_id: project_id,
+      //     confirm: 1
+      //   },
+      //   headers: {
+      //     'X-CSRF-TOKEN': '{{ csrf_token() }}'
+      //   },
+      //   success: function (response) {
+      //     alert('Project action updated!');
+      //     // Redirect with project_id in URL
+      //     window.location.href = '{{ route("conformation-page") }}' + '?project_id=' + project_id;
+      //   },
+      //   error: function (xhr) {
+      //     alert('Something went wrong. Please try again.');
+      //   }
+      // });
+    });
+  });
+</script>
 
 </body>
 </html>
