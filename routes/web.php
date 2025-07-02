@@ -2,7 +2,7 @@
 
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\AdminController;
-
+use App\Http\Controllers\EngginerController;
 use Illuminate\Support\Facades\Route;
 
 use App\Http\Controllers\CoustomerController;
@@ -28,10 +28,9 @@ Route::post('/registerServiceProvider', [VenderController::class, 'registerServi
 Route::get('/get-services/{agency_id}', [VenderController::class, 'getServices']);
 Route::post('/save-agency-services', [VenderController::class, 'save_agency_services'])->name('save.agency.services');
 
-
 Route::get('/login', [AuthController::class, 'showLoginForm']);
 Route::post('/login', [AuthController::class, 'login'])->name('login');
-Route::get('/admin_dashboard', [AdminController::class, 'admin_dashboard'])->name('admin_dashboard');
+// Route::get('/admin_dashboard', [AdminController::class, 'admin_dashboard'])->name('admin_dashboard');
     // ->middleware('authCheck');
 Route::post('/project-information', [CoustomerController::class, 'store'])->name('projectinfostore');
 Route::get('/more-about-project', [CoustomerController::class, 'more_about_project'])->name('more-about-project');
@@ -45,6 +44,8 @@ Route::get('/vender_reject_data', [AdminController::class, 'vender_reject_data']
 Route::post('/admin/vendors/{id}/update-status', [VenderController::class, 'updateStatus'])->name('vendor.updateStatus');
 Route::get('/vender/list-of-projects', [VenderController::class, 'showListPage'])->name('projects.list.page');
 Route::get('/vender/projects-data', [VenderController::class, 'projectsData']);
+
+Route::get('/vender/like-projects-data', [VenderController::class, 'likeprojectsData']);
 Route::get('construction_type', [AdminController::class, 'construction_type'])->name('construction_type');
 
 Route::post('categorystore', [AdminController::class, 'categorystore'])->name('categorystore');
@@ -62,20 +63,38 @@ Route::get('/get-category-by-project-type/{id}', [AdminController::class, 'getCa
 Route::post('/subcategory/delete/{id}', [AdminController::class, 'deleteSubCategory'])->name('subcategory.delete');
 Route::get('/project-details/{id}', [CoustomerController::class, 'project_details'])->name('project-details');
 
-// Route::get('/project-details', [CoustomerController::class, 'project_details'])->name('project-details');
+Route::get('/project-details', [CoustomerController::class, 'project_details'])->name('project-details');
 Route::post('/project-details-store', [CoustomerController::class, 'project_details_store'])->name('project-details-store');
 Route::get('/conformation-page', [CoustomerController::class, 'conformation_page'])->name('conformation-page');
 
 Route::get('/customer-details-page', [CoustomerController::class, 'customer_details'])->name('customer_details');
-Route::get('/customer-dashboard', [CoustomerController::class, 'customer_dashboard'])->name('customer.dashboard');
+// Route::get('/customer-dashboard', [CoustomerController::class, 'customer_dashboard'])->name('customer.dashboard');
 Route::post('/project/update-action', [CoustomerController::class, 'updateAction'])->name('update.project.action');
 // web.php
 Route::post('/store-project-session', [CoustomerController::class, 'storeProjectSession'])->name('store.project.session');
 Route::get('/types_of_agency', [VenderController::class, 'types_of_agency'])->name('types_of_agency');
 Route::post('/business-store', [VenderController::class, 'business_store'])->name('business.store');
 Route::get('/vendor_confiermetion', [VenderController::class, 'vendor_confiermetion'])->name('vendor_confiermetion');
-Route::get('/vendor_dashboard', [VenderController::class, 'vendor_dashboard'])->name('vendor_dashboard');
-Route::get('/vender/list-of-projects', [VenderController::class, 'showListPage'])->name('projects.list.page');
+// Route::get('/vendor_dashboard', [VenderController::class, 'vendor_dashboard'])->name('vendor_dashboard');
+// Route::get('/vender/list-of-projects', [VenderController::class, 'showListPage'])->name('projects.list.page');
 Route::post('/project-likes', [VenderController::class, 'projectlikes']);
+Route::get('/vendor_likes_project', [VenderController::class, 'vendor_likes_project'])->name('vendor_likes_project');
 
-Route::get('/project-details/{id}', [VenderController::class, 'projectshow']);
+
+
+Route::get('/project-details-vendor/{id}', [VenderController::class, 'projectshow']);
+// Route::post('/project-information', [CoustomerController::class, 'store'])->name('projectinfostore');
+    // Route::get('/project', [CoustomerController::class, 'project'])->name('project');
+
+// Route::middleware(['CheckUserLogin'])->group(function () {
+    Route::get('/admin_dashboard', [AdminController::class, 'admin_dashboard'])->name('admin_dashboard');
+    Route::get('/customer-dashboard', [CoustomerController::class, 'customer_dashboard'])->name('customer.dashboard');
+    Route::get('/vendor_dashboard', [VenderController::class, 'vendor_dashboard'])->name('vendor_dashboard');
+    Route::get('/engineer_dashboard', [EngginerController::class, 'engineer_dashboard'])->name('engineer_dashboard');
+    Route::get('/NewProject', [EngginerController::class, 'allprojectdata'])->name('NewProject');
+    // Route::get('/project/{id}', [EngineerController::class, 'projectshow'])->name('project.show');
+
+    Route::post('/engineer/project/update-remarks', [EngginerController::class, 'updateRemarks']);
+
+    // Add all other protected routes here...
+// });

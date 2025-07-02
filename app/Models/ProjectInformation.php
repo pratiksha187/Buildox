@@ -19,12 +19,21 @@ class ProjectInformation extends Model
     'plot_ready',
     'project_type',
     'sub_categories',
-    'profile_image'
+    'profile_image',
+    'land_location',
+    'land_type',
+    'survey_no',
+    'area',
+    'area_unit',
+    'has_arch_drawing',
+    'has_structural_drawing',
+    'boqCheckbox',
+    'boqFile',
     ];
 
     protected $casts = [
     'sub_categories' => 'array',
-    'plot_ready' => 'boolean',
+    'plot_ready' => 'boolean', 
 ];
 
 

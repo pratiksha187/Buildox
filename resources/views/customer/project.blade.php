@@ -1,224 +1,337 @@
 @extends('layouts.project.app')
-
 @section('title', 'Project Information')
-
 @section('content')
-<!-- Select2 CSS -->
 <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
-
 <style>
-  .form-section {
-    background-color: #f9f9fb;
-    padding: 40px;
-    border-radius: 10px;
-  }
-
-  .form-title-wrapper {
-    text-align: center;
-    margin-bottom: 30px;
-  }
-
-  .form-title-wrapper h4 {
-    font-weight: 600;
-    font-size: 1.75rem;
-  }
-
-  .form-switch label {
-    margin-left: 0.5rem;
-  }
-
-  .select2-container--default .select2-selection--multiple {
-    border: 1px solid #ced4da;
-    border-radius: 0.375rem;
-    padding: 0.375rem 0.75rem;
-  }
+   .form-section {
+   background-color: #f9f9fb;
+   padding: 40px;
+   border-radius: 10px;
+   }
+   .form-title-wrapper {
+   text-align: center;
+   margin-bottom: 30px;
+   }
+   .form-title-wrapper h4 {
+   font-weight: 600;
+   font-size: 1.75rem;
+   }
+   .form-switch label {
+   margin-left: 0.5rem;
+   }
+   .select2-container--default .select2-selection--multiple {
+   border: 1px solid #ced4da;
+   border-radius: 0.375rem;
+   padding: 0.375rem 0.75rem;
+   }
+   #suggestions {
+   max-height: 200px; /* 👈 sets scroll height */
+   overflow-y: auto;  /* 👈 enables scroll */
+   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+   z-index: 1000;
+   }
+   .dropdown-item {
+   cursor: pointer;
+   padding: 8px 12px;
+   }
+   .dropdown-item:hover {
+   background-color: #f1f1f1;
+   }
+   .position-relative {
+   position: relative;
+   }
 </style>
-
 <div class="container my-5">
-  <div class="form-section shadow-sm">
-    <div class="form-title-wrapper">
-      <h4>Tell us about your project</h4>
-    </div>
-
-    <form id="projectForm" method="POST" enctype="multipart/form-data">
-      <div class="row mb-3">
-        <div class="col-md-6">
-          <label class="form-label">Full Name</label>
-          <input type="text" name="full_name" id="full_name" class="form-control" placeholder="Enter full name">
-        </div>
-        <div class="col-md-6">
-          <label class="form-label">Phone Number</label>
-          <input type="text" name="phone_number" id="phone_number" class="form-control" placeholder="Enter phone number">
-        </div>
+   <div class="form-section shadow-sm">
+      <div class="form-title-wrapper">
+         <h4>Tell us about your project</h4>
       </div>
-
-      <div class="row mb-3">
-        <div class="col-md-6">
-          <label class="form-label">Email</label>
-          <input type="email" name="email" id="email" class="form-control" placeholder="Enter email">
-        </div>
-        <div class="col-md-6">
-          <label class="form-label">Password</label>
-          <input type="password" name="password" id="password" class="form-control" placeholder="Enter password">
-        </div>
-      </div>
-
-      <div class="row mb-3">
-        <div class="col-md-6">
-          <label for="profile_image" class="form-label">Select Profile Image</label>
-          <input type="file" class="form-control" id="profile_image" name="profile_image" accept="image/*">
-        </div>
-        <div class="col-md-6">
-          <label for="role" class="form-label">Select Your Role</label>
-          <select class="form-select" id="role" name="role">
-            <option selected disabled>Choose your role</option>
-            <option value="1">Private Property Owner</option>
-            <option value="2">Builder (Residential/Commercial/Mixed Use)</option>
-            <option value="3">Developer</option>
-            <option value="4">Factory Head</option>
-            <option value="5">Institutional Head</option>
-            <option value="6">Hospitality Owner</option>
-          </select>
-        </div>
-      </div>
-
-      <div class="row mb-3">
-        <div class="col-md-6">
-          <label for="construction_type" class="form-label">Type of Vendor Needed</label>
-          <select id="construction_type" name="construction_type" class="form-select">
-            <option value="">Select Construction Type</option>
-            @foreach($construction_types as $type)
-              <option value="{{ $type->id }}">{{ $type->name }}</option>
-            @endforeach
-          </select>
-        </div>
-        <div class="col-md-6">
-          <label for="project_type" class="form-label">Select Project Type</label>
-          <select id="project_type" name="project_type" class="form-select mt-3">
-            <option value="">Select Project Type</option>
-          </select>
-        </div>
-      </div>
-
-      <div class="row mb-3">
-        <div id="sub_categories_container" class="col-md-6" style="display: none;">
-          <label class="form-label fw-bold" id="sub_category_title"></label>
-          Select Sub-Categories
-          <div id="sub_categories" name="sub_categories" class="form-check d-flex flex-column gap-2 mt-2"></div>
-        </div>
-      </div>
-
-      <div class="form-check form-switch mb-4">
-        <input class="form-check-input" type="checkbox" id="plot_ready" name="plot_ready">
-        <label class="form-check-label" for="plot_ready">Do you have your plot/site ready?</label>
-      </div>
-
-      <button class="btn btn-primary" type="submit">Next</button>
-    </form>
-  </div>
+      <form id="projectForm" method="POST" enctype="multipart/form-data">
+         <div class="row mb-3">
+            <div class="col-md-6">
+               <label class="form-label">Full Name</label>
+               <input type="text" name="full_name" id="full_name" class="form-control" placeholder="Enter full name">
+            </div>
+            <div class="col-md-6">
+               <label class="form-label">Phone Number</label>
+               <input type="text" name="phone_number" id="phone_number" class="form-control" placeholder="Enter phone number">
+            </div>
+         </div>
+         <div class="row mb-3">
+            <div class="col-md-6 position-relative">
+               <label class="form-label">Email</label>
+               <input type="email" name="email" id="email" class="form-control" placeholder="Enter email" autocomplete="off">
+               <div id="suggestions" class="dropdown-menu show w-100" style="display: none;"></div>
+            </div>
+            <div class="col-md-6">
+               <label class="form-label">Password</label>
+               <input type="password" name="password" id="password" class="form-control" placeholder="Enter password">
+            </div>
+         </div>
+         <div class="row mb-3">
+            <div class="col-md-6">
+               <label for="profile_image" class="form-label">Select Profile Image</label>
+               <input type="file" class="form-control" id="profile_image" name="profile_image" accept="image/*">
+            </div>
+            <div class="col-md-6">
+               <label for="role" class="form-label">Select Your Role</label>
+               <select class="form-select" id="role" name="role">
+                  <option selected disabled>Choose your role</option>
+                  <option value="1">Private Property Owner</option>
+                  <option value="2">Builder (Residential/Commercial/Mixed Use)</option>
+                  <option value="3">Developer</option>
+                  <option value="4">Factory Head</option>
+                  <option value="5">Institutional Head</option>
+                  <option value="6">Hospitality Owner</option>
+               </select>
+            </div>
+         </div>
+         <div class="row mb-3">
+            <div class="col-md-6">
+               <label for="construction_type" class="form-label">Type of Vendor Needed</label>
+               <select id="construction_type" name="construction_type" class="form-select">
+                  <option value="">Select Construction Type</option>
+                  @foreach($construction_types as $type)
+                  <option value="{{ $type->id }}">{{ $type->name }}</option>
+                  @endforeach
+               </select>
+            </div>
+            <div class="col-md-6">
+               <label for="project_type" class="form-label">Select Project Type</label>
+               <select id="project_type" name="project_type" class="form-select mt-3">
+                  <option value="">Select Project Type</option>
+               </select>
+            </div>
+         </div>
+         <div class="row mb-3">
+            <div id="sub_categories_container" class="col-md-6" style="display: none;">
+               <label class="form-label fw-bold" id="sub_category_title"></label>
+               Select Sub-Categories
+               <div id="sub_categories" name="sub_categories" class="form-check d-flex flex-column gap-2 mt-2"></div>
+            </div>
+         </div>
+         <div class="form-check form-switch mb-4">
+            <input class="form-check-input" type="checkbox" id="plot_ready" name="plot_ready">
+            <label class="form-check-label" for="plot_ready">Do you have your plot/site ready?</label>
+         </div>
+         <div id="plotDetailsSection" style="display: none;">
+            <div class="row mb-3">
+               <div class="col-md-12">
+                  <label class="form-label">Land location</label>
+                  <input type="text" name="land_location" id="land_location" class="form-control" placeholder="Enter land location">
+               </div>
+            </div>
+            <div class="row mb-3">
+               <div class="col-md-6">
+                  <label class="form-label">Land type</label>
+                  <select name="land_type" id="land_type" class="form-select">
+                     <option value="">Select land type</option>
+                     <option value="1">Residential</option>
+                     <option value="2">Commercial</option>
+                     <option value="3">Industrial</option>
+                     <!-- Add more as needed -->
+                  </select>
+               </div>
+               <div class="col-md-6">
+                  <label class="form-label">Survey No. (optional)</label>
+                  <input type="text" name="survey_no" id="survey_no" class="form-control" placeholder="Enter survey number">
+               </div>
+            </div>
+            <div class="row mb-3">
+               <div class="col-md-6 d-flex">
+                  <input type="number" name="area" id="area" class="form-control" placeholder="Area">
+                  <select name="area_unit" id="area_unit" class="form-select ms-2" style="max-width: 100px;">
+                     <option value="1">sq.ft</option>
+                     <option value="2">sq.m</option>
+                     <option value="3">Acre</option>
+                     <!-- Add more units if needed -->
+                  </select>
+               </div>
+            </div>
+            <div class="row mb-3">
+               <div class="col-md-6 d-flex align-items-center">
+                  <label class="form-check-label me-2">Do you have architectural drawing?</label>
+                  <div class="form-check form-switch">
+                     <input class="form-check-input" type="checkbox" name="has_arch_drawing" id="has_arch_drawing">
+                  </div>
+               </div>
+               <div class="col-md-6 d-flex align-items-center">
+                  <label class="form-check-label me-2">Do you have structural drawing?</label>
+                  <div class="form-check form-switch">
+                     <input class="form-check-input" type="checkbox" name="has_structural_drawing" id="has_structural_drawing">
+                  </div>
+               </div>
+            </div>
+            <div class="form-check mb-3">
+               <input class="form-check-input" type="checkbox" value="1" id="boqCheckbox" name="boqCheckbox">
+               <label class="form-check-label" for="boqCheckbox">
+               BOQ
+               </label>
+            </div>
+            <div class="mb-3" id="excelUpload" style="display: none;">
+               <label for="boqFile" class="form-label">Upload BOQ (Excel only)</label>
+               <input class="form-control" type="file" id="boqFile" name="boqFile" accept=".xls,.xlsx">
+            </div>
+         </div>
+         <button class="btn btn-primary" type="submit">Next</button>
+      </form>
+   </div>
 </div>
-
 <!-- Scripts -->
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
-
 <script>
-  $(document).ready(function () {
-    $('#projectForm').on('submit', function (e) {
-      e.preventDefault();
-
-      let form = this;
-      let formData = new FormData(form);
-
-      // Checkbox value
-      formData.set('plot_ready', $('#plot_ready').is(':checked') ? 1 : 0);
-
-      // Handle sub-categories
-      formData.delete('sub_categories[]');
-      $('input[name="sub_categories[]"]:checked').each(function () {
-        formData.append('sub_categories[]', $(this).val());
-      });
-
-      $.ajax({
-        url: '{{ route('projectinfostore') }}',
-        method: 'POST',
-        data: formData,
-        processData: false,
-        contentType: false,
-        headers: {
-          'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-        },
-        success: function (response) {
-          if (response.status === 'success') {
-            alert(response.message);
-            $('#projectForm')[0].reset();
-            $('#construction_type').val(null).trigger('change');
-            $('#project_type').empty().append('<option value="">Select Project Type</option>');
-            $('#sub_categories').empty();
-            $('#sub_categories_container').hide();
-            $('#project_id').val(response.project_id);
-            window.location.href = '/project-details/' + response.project_id;
-          }
-        },
-        error: function (xhr) {
-          if (xhr.status === 409 && xhr.responseJSON.status === 'exists') {
-            alert(xhr.responseJSON.message);
-            return;
-          }
-
-          const errors = xhr.responseJSON.errors;
-          if (errors) {
-            $('.is-invalid').removeClass('is-invalid');
-            $('.invalid-feedback').remove();
-
-            $.each(errors, function (field, messages) {
-              const inputField = $('#' + field);
-              inputField.addClass('is-invalid');
-              inputField.after('<div class="invalid-feedback">' + messages.join('<br>') + '</div>');
-            });
-          } else {
-            alert('An unexpected error occurred. Please try again.');
-          }
-        }
-      });
-    });
-
-    $('#construction_type').on('change', function () {
-      let id = $(this).val();
-      $('#project_type').empty().append('<option value="">Select Project Type</option>');
-      $('#subcategory').empty().append('<option value="">Select Subcategory</option>');
-
-      if (id) {
-        $.get('/get-project-types/' + id, function (data) {
-          $.each(data, function (i, type) {
-            $('#project_type').append(`<option value="${type.id}">${type.name}</option>`);
-          });
-        });
-      }
-    });
-
-    $('#project_type').on('change', function () {
-      let id = $(this).val();
-      const container = $('#sub_categories');
-      container.empty();
-      $('#sub_categories_container').hide();
-
-      if (id) {
-        $.get('/get-subcategories/' + id, function (data) {
-          if (data.length > 0) {
-            data.forEach(sub => {
-              const checkboxHTML = `
-                <div class="form-check">
-                  <input class="form-check-input" type="checkbox" id="subcat_${sub.id}" name="sub_categories[]" value="${sub.id}">
-                  <label class="form-check-label" for="subcat_${sub.id}">${sub.name}</label>
-                </div>`;
-              container.append(checkboxHTML);
-            });
-            $('#sub_categories_container').show();
-          }
-        });
-      }
-    });
-  });
+   $('#plot_ready').on('change', function () {
+     if ($(this).is(':checked')) {
+       $('#plotDetailsSection').slideDown();
+     } else {
+       $('#plotDetailsSection').slideUp();
+     }
+   });
+   
+   $(document).ready(function () {
+     $('#projectForm').on('submit', function (e) {
+       e.preventDefault();
+   
+       let form = this;
+       let formData = new FormData(form);
+   
+       // Checkbox value
+       formData.set('plot_ready', $('#plot_ready').is(':checked') ? 1 : 0);
+   
+       // Handle sub-categories
+       formData.delete('sub_categories[]');
+       $('input[name="sub_categories[]"]:checked').each(function () {
+         formData.append('sub_categories[]', $(this).val());
+       });
+   
+       $.ajax({
+         url: '{{ route('projectinfostore') }}',
+         method: 'POST',
+         data: formData,
+         processData: false,
+         contentType: false,
+         headers: {
+           'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+         },
+         success: function (response) {
+           if (response.status === 'success') {
+             alert(response.message);
+             $('#projectForm')[0].reset();
+             $('#construction_type').val(null).trigger('change');
+             $('#project_type').empty().append('<option value="">Select Project Type</option>');
+             $('#sub_categories').empty();
+             $('#sub_categories_container').hide();
+             $('#project_id').val(response.project_id);
+             window.location.href = '/project-details/' + response.project_id;
+           }
+         },
+         error: function (xhr) {
+           if (xhr.status === 409 && xhr.responseJSON.status === 'exists') {
+             alert(xhr.responseJSON.message);
+             return;
+           }
+   
+           const errors = xhr.responseJSON.errors;
+           if (errors) {
+             $('.is-invalid').removeClass('is-invalid');
+             $('.invalid-feedback').remove();
+   
+             $.each(errors, function (field, messages) {
+               const inputField = $('#' + field);
+               inputField.addClass('is-invalid');
+               inputField.after('<div class="invalid-feedback">' + messages.join('<br>') + '</div>');
+             });
+           } else {
+             alert('An unexpected error occurred. Please try again.');
+           }
+         }
+       });
+     });
+   
+     $('#construction_type').on('change', function () {
+       let id = $(this).val();
+       $('#project_type').empty().append('<option value="">Select Project Type</option>');
+       $('#subcategory').empty().append('<option value="">Select Subcategory</option>');
+   
+       if (id) {
+         $.get('/get-project-types/' + id, function (data) {
+           $.each(data, function (i, type) {
+             $('#project_type').append(`<option value="${type.id}">${type.name}</option>`);
+           });
+         });
+       }
+     });
+   
+     $('#project_type').on('change', function () {
+       let id = $(this).val();
+       const container = $('#sub_categories');
+       container.empty();
+       $('#sub_categories_container').hide();
+   
+       if (id) {
+         $.get('/get-subcategories/' + id, function (data) {
+           if (data.length > 0) {
+             data.forEach(sub => {
+               const checkboxHTML = `
+                 <div class="form-check">
+                   <input class="form-check-input" type="checkbox" id="subcat_${sub.id}" name="sub_categories[]" value="${sub.id}">
+                   <label class="form-check-label" for="subcat_${sub.id}">${sub.name}</label>
+                 </div>`;
+               container.append(checkboxHTML);
+             });
+             $('#sub_categories_container').show();
+           }
+         });
+       }
+     });
+   });
+</script>
+<script>
+   const boqCheckbox = document.getElementById('boqCheckbox');
+   const excelUpload = document.getElementById('excelUpload');
+   
+   boqCheckbox.addEventListener('change', function () {
+     excelUpload.style.display = this.checked ? 'block' : 'none';
+   });
+</script>
+<script>
+   const emailInput = document.getElementById('email');
+   const suggestionsBox = document.getElementById('suggestions');
+   
+   const domains = [
+     'gmail.com', 'yahoo.com', 'rediffmail.com', 'outlook.com', 'hotmail.com',
+     'live.com', 'aol.com', 'icloud.com', 'protonmail.com', 'mail.com',
+     'zoho.com', 'gmx.com', 'yandex.com', 'msn.com', 'inbox.com', 'me.com'
+   ];
+   
+   emailInput.addEventListener('input', function () {
+     const value = this.value;
+     const atIndex = value.indexOf('@');
+   
+     if (atIndex !== -1 && !value.includes('.', atIndex)) {
+       const username = value.slice(0, atIndex + 1); // include @
+       suggestionsBox.innerHTML = '';
+       domains.forEach(domain => {
+         const item = document.createElement('a');
+         item.className = 'dropdown-item';
+         item.textContent = username + domain;
+         item.onclick = () => {
+           emailInput.value = item.textContent;
+           suggestionsBox.style.display = 'none';
+         };
+         suggestionsBox.appendChild(item);
+       });
+       suggestionsBox.style.display = 'block';
+     } else {
+       suggestionsBox.style.display = 'none';
+     }
+   });
+   
+   document.addEventListener('click', (e) => {
+     if (!suggestionsBox.contains(e.target) && e.target !== emailInput) {
+       suggestionsBox.style.display = 'none';
+     }
+   });
 </script>
 @endsection

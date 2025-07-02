@@ -130,7 +130,7 @@
       <h4 class="text-lg font-semibold text-gray-800">Ready to start a new project?</h4>
       <p class="text-gray-600 text-sm">Let us help you bring your vision to life.</p>
     </div>
-    <a href="#" class="text-blue-600 border border-blue-500 hover:bg-blue-100 font-medium px-4 py-2 rounded">
+    <a href="{{ route('project') }}" class="text-blue-600 border border-blue-500 hover:bg-blue-100 font-medium px-4 py-2 rounded">
       + Add Another Project
     </a>
   </section>

@@ -20,5 +20,6 @@ class ProjectDetails extends Model
         'budget_range',
         'expected_timeline',
         'file_path',
+        'engg_decription',
     ];
 }

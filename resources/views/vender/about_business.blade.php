@@ -95,8 +95,21 @@
               <option value="3">Proprietorship</option>
               <option value="4">LLP</option>
               <option value="5">Public Limited</option>
+              <option value="6">OPC</option>
+              <option value="7">HUF</option>
             </select>
           </div>
+
+          <div class="col-md-6 mt-3" id="aadhar_section" style="display: none;">
+            <label class="form-label">Aadhar Card No</label>
+            <input type="text" name="aadhar_card_no" id="aadhar_card_no" class="form-control" placeholder="Enter Aadhar number">
+          </div>
+
+          <div class="col-md-6 mt-3" id="cin_section" style="display: none;">
+            <label class="form-label">CIN No</label>
+            <input type="text" name="cin_no" id="cin_no" class="form-control" placeholder="Enter CIN number">
+          </div>
+
         </div>
         <div class="mb-3">
           <label class="form-label">Registered Office Address *</label>
@@ -246,6 +259,21 @@
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
   <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script>
+  $('#entity_type').on('change', function () {
+  const value = $(this).val();
+
+  if (value === '3' || value === '4' || value === '7') {
+    $('#aadhar_section').show();
+    $('#cin_section').hide();
+  } else if (value !== '') {
+    $('#cin_section').show();
+    $('#aadhar_section').hide();
+  } else {
+    $('#aadhar_section').hide();
+    $('#cin_section').hide();
+  }
+});
+
   $(document).ready(function () {
     $('#businessForm').on('submit', function (e) {
       e.preventDefault();

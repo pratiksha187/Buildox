@@ -54,6 +54,8 @@
   </style>
 </head>
 <body>
+  <input type="hidden" name="vendor_id" value="{{ $vendor_id }}">
+
 
   <div class="header-section">
     <div class="icon-wrapper bg-white text-dark mb-3">
@@ -65,11 +67,19 @@
   </div>
 
   <div class="container card-box">
+  
+    <div class="d-flex justify-content-end mb-3">
+        <a href="{{ route('vendor_likes_project') }}" class="btn btn-outline-success">
+            ❤️ Like Projects
+        </a>
+    </div>
+
+
     <div class="row text-center mb-4">
       <h5>Meanwhile, you can:</h5>
     </div>
-    <div class="row g-4 mb-4">
-      <div class="col-md-4">
+    <div class="row g-4 mb-4 justify-content-center">
+      <div class="col-md-5 me-md-4">
         <div class="card-item">
           <div class="icon-wrapper">
             🔍
@@ -81,7 +91,7 @@
           </a>
         </div>
       </div>
-      <div class="col-md-4">
+      <div class="col-md-5">
         <div class="card-item">
           <div class="icon-wrapper">
             👤
@@ -91,16 +101,7 @@
           <a href="{{ route('vendor_dashboard') }}" class="btn btn-primary">Edit Profile</a>
         </div>
       </div>
-      <div class="col-md-4">
-        <div class="card-item">
-          <div class="icon-wrapper">
-            👥
-          </div>
-          <h5>Invite Team</h5>
-          <p>Add team members to collaborate on projects</p>
-          <a href="#" class="btn btn-primary">Send Invites</a>
-        </div>
-      </div>
+     
     </div>
 
     <div class="info-box text-center mb-4">
@@ -114,7 +115,7 @@
         <a href="#" class="btn btn-outline-secondary me-2">Go to Dashboard</a>
         <a href="#" class="btn btn-dark">Log Out</a>
       </div>
-    </div> --}}
+    </div>  --}}
   </div>
 
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>

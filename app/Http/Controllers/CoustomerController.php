@@ -16,7 +16,7 @@ class CoustomerController extends Controller
    
     public function project()
     {
-        // Assuming your construction types are stored in a `construction_types` table
+      
         $construction_types = DB::table('categories')->orderBy('id')->get();
 
         return view('customer.project', compact('construction_types'));
@@ -41,6 +41,7 @@ class CoustomerController extends Controller
         return response()->json($subs);
     }
 
+
     public function store(Request $request)
     {
         $validated = $request->validate([
@@ -56,6 +57,21 @@ class CoustomerController extends Controller
             'profile_image' => 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:2048',
         ]);
 
+        // Additional validation for land fields if plot is ready
+        if ($request->plot_ready) {
+            $request->validate([
+                'land_location' => 'nullable|string|max:255',
+                'land_type' => 'nullable|string|max:100',
+                'survey_no' => 'nullable|string|max:100',
+                'area' => 'nullable|numeric',
+                'area_unit' => 'nullable|string|max:50',
+                'has_arch_drawing' => 'nullable',
+                'has_structural_drawing' => 'nullable',
+                'boqCheckbox' => 'nullable',
+                'boqFile' => 'nullable'
+            ]);
+        }
+
         // Check for duplicate phone number
         if (ProjectInformation::where('phone_number', $validated['phone_number'])->exists()) {
             return response()->json([
@@ -69,20 +85,35 @@ class CoustomerController extends Controller
         if ($request->hasFile('profile_image')) {
             $imagePath = $request->file('profile_image')->store('profile_images', 'public');
         }
+        $boqFilePath = null;
+        if ($request->hasFile('boqFile')) {
+            $boqFilePath = $request->file('boqFile')->store('boq_files', 'public');
+        }
 
-        // Save to DB
+        // Save to database
         $project = ProjectInformation::create([
             'full_name' => $validated['full_name'],
             'phone_number' => $validated['phone_number'],
             'email' => $validated['email'],
-            'password' =>  Hash::make($validated['password']),
+            'password' => Hash::make($validated['password']),
             'role' => $validated['role'],
             'construction_type' => $validated['construction_type'],
             'project_type' => $validated['project_type'],
             'sub_categories' => $request->has('sub_categories') ? json_encode($request->sub_categories) : null,
             'plot_ready' => $validated['plot_ready'],
             'profile_image' => $imagePath,
-            'login_id' => 3
+            'login_id' => 3,
+
+            // Land-related fields (conditionally saved)
+            'land_location' => $request->land_location,
+            'land_type' => $request->land_type,
+            'survey_no' => $request->survey_no,
+            'area' => $request->area,
+            'area_unit' => $request->area_unit,
+            'has_arch_drawing' => $request->has('has_arch_drawing'),
+            'has_structural_drawing' => $request->has('has_structural_drawing'),
+            'boqFile' => $boqFilePath,
+            'boqCheckbox' => $request->boqCheckbox
         ]);
 
         return response()->json([
@@ -91,7 +122,6 @@ class CoustomerController extends Controller
             'project_id' => $project->id,
         ]);
     }
-
 
     public function more_about_project(){
         return view('customer.more_about_project');

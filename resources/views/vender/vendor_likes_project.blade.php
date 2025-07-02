@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="csrf-token" content="{{ csrf_token() }}">
-  <title>Explore Projects</title>
+  <title>Explore Like Projects</title>
 
   <!-- Fonts & CSS -->
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
@@ -24,7 +24,7 @@
 <div class="container py-5">
   <div class="card shadow-sm">
     <div class="card-body">
-      <h3 class="mb-4 text-primary">🔍 Explore Projects</h3>
+      <h3 class="mb-4 text-primary">🔍 Explore Like Projects</h3>
 
       <!-- Filter Form -->
       <form id="filterForm" class="row g-3 mb-4">
@@ -50,7 +50,6 @@
               <th>📌 Project Name</th>
               <th>💰 Budget</th>
               <th>⏱️ Timeline</th>
-              <th>❤️ Like</th>
               <th>👁️ View</th>
             </tr>
           </thead>
@@ -97,25 +96,18 @@ $(document).ready(function () {
     processing: true,
     serverSide: true,
     ajax: {
-      url: "{{ url('/vender/projects-data') }}",
+      url: "{{ url('/vender/like-projects-data') }}",
       data: function (d) {
         d.project_name = $('input[name=project_name]').val();
         d.budget_range = $('input[name=budget_range]').val();
+       
       }
     },
     columns: [
       { data: 'project_name', name: 'project_name' },
       { data: 'budget_range', name: 'budget_range' },
       { data: 'expected_timeline', name: 'expected_timeline' },
-      {
-        data: null,
-        name: 'like',
-        orderable: false,
-        searchable: false,
-        render: function (data, type, row) {
-          return `<button class="btn btn-outline-danger btn-sm like-btn" data-id="${row.id}">❤️ Like</button>`;
-        }
-      },
+     
       {
         data: null,
         name: 'view',
@@ -140,31 +132,10 @@ $(document).ready(function () {
     table.draw();
   });
 
-  // Like project
-  $('#projectsTable').on('click', '.like-btn', function () {
-    const projectId = $(this).data('id');
 
-    $.ajax({
-      url: '/project-likes',
-      method: 'POST',
-      data: { project_id: projectId },
-      success: function (response) {
-        alert(response.message || 'Project liked successfully!');
-      },
-      error: function (xhr) {
-        if (xhr.status === 409) {
-          alert(xhr.responseJSON.message || 'You already liked this project.');
-        } else {
-          alert('An error occurred while liking the project.');
-        }
-      }
-    });
-  });
-
-  // View project details
   $('#projectsTable').on('click', '.view-btn', function () {
     const projectId = $(this).data('id');
-// alert(projectId);
+        // alert(projectId);
     $.ajax({
       url: `/project-details-vendor/${projectId}`,
       method: 'GET',

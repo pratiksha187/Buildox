@@ -84,51 +84,10 @@ class AuthController extends Controller
         return back()->with('error', 'Invalid credentials or unauthorized user.');
     }
 
-    // public function login(Request $request)
-    // {
-    //     // Validate email and password presence
-    //     $request->validate([
-    //         'email' => 'required|email',
-    //         'password' => 'required'
-    //     ]);
-
-    //     // Try to login as Admin from `users` table
-    //     $admin = DB::table('users')
-    //                 ->where('email', $request->email)
-    //                 ->first();
-
-    //     if ($admin && Hash::check($request->password, $admin->password)) {
-        
-    //         // Optional: check admin role if needed (e.g., $admin->role == 'admin')
-    //         session(['admin' => $admin]);
-    //         return redirect('/admin_dashboard');
-    //     }
-
-    //     // If not admin, check customer login from `project_information` table
-    //     $user = DB::table('project_information')
-    //             ->where('email', $request->email)
-    //             ->first();
-
-    //     if ($user && $user->login_id == 3 && Hash::check($request->password, $user->password)) {
-    //         $project_data = DB::table('projects_details')
-    //                         ->where('project_id', $user->id)
-    //                         ->first();
-
-    //         session([
-    //             'user' => $user,
-    //             'project_id' => optional($project_data)->id
-    //         ]);
-
-    //         return redirect('/customer-dashboard');
-    //     }
-
-    //     return back()->with('error', 'Invalid credentials or unauthorized user.');
-    // }
-
-
+   
 
     public function logout() {
         session()->forget('user');
-        return redirect('/login');
+        return redirect('/');
     }
 }

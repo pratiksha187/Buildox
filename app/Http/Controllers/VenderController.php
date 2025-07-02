@@ -168,6 +168,8 @@ class VenderController extends Controller
             'portfolio_file' => 'nullable|file|mimes:pdf,jpg,jpeg,png',
             'past_work_photos_file' => 'nullable|file|mimes:pdf,jpg,jpeg,png',
             'license_certificate_file' => 'nullable|file|mimes:pdf,jpg,jpeg,png',
+            'aadhar_section' =>'nullable',
+            'cin_section' => 'nullable',
         ]);
         // $userId = session('user_id');
         $vendor_id = session('vendor_id');
@@ -197,9 +199,17 @@ class VenderController extends Controller
         ]);
     }
 
-    public function vendor_confiermetion(){
-        return view('vender.vendor_confiermetion');
+ 
+
+    public function vendor_confiermetion()
+    {
+        $vendor_id = session('vendor_id');
+
+        return view('vender.vendor_confiermetion', [
+            'vendor_id' => $vendor_id
+        ]);
     }
+
 
     public function vendor_dashboard(){
         return view('vender.vendor_dashboard');
@@ -226,6 +236,11 @@ class VenderController extends Controller
         return view('vender.list_of_project');
     }
 
+     public function vendor_likes_project()
+    {
+        return view('vender.vendor_likes_project');
+    }
+
     public function projectsData(Request $request)
     {
         $query = ProjectDetails::query();
@@ -241,23 +256,63 @@ class VenderController extends Controller
         return DataTables::of($query)->make(true);
     }
 
-
-    // public function projectlikes(Request $request)
+    // public function likeprojectsData(Request $request)
     // {
-    //     $vendor_id = session('vendor_id');
-        
-    //     $request->validate([
-    //         'project_id' => 'required',
-    //     ]);
+    //     $vendorId = $request->query('vendor_id');
+    //     $query = ProjectDetails::query();
 
-    //     ProjectLike::create([
-    //         'project_id' => $request->project_id,
-    //         'vendor_id' => $vendor_id, 
-    //         'ip_address' => $request->ip(),
-    //     ]);
+    //     if ($request->filled('project_name')) {
+    //         $query->where('project_name', 'like', '%' . $request->project_name . '%');
+    //     }
 
-    //     return response()->json(['message' => 'Like recorded!']);
+    //     if ($request->filled('budget_range')) {
+    //         $query->where('budget_range', 'like', '%' . $request->budget_range . '%');
+    //     }
+
+    //     return DataTables::of($query)->make(true);
     // }
+// public function likeprojectsData(Request $request)
+// {
+//     $vendorId = session('vendor_id');
+
+//     // Start a plain DB query
+//     $query = DB::table('project_likes');
+
+//     // Filter by vendor_id (example: if you store likes in a separate table)
+//     if ($vendorId) {
+//         // Assuming `projects_details` has a column `liked_by` (adjust if needed)
+//         $query->where('vendor_id', $vendorId);
+        
+//     }
+
+//     return DataTables::of($query)->make(true);
+// }
+public function likeprojectsData(Request $request)
+{
+    $vendorId = session('vendor_id');
+
+    // Join with projects_details table to get project information
+    $query = DB::table('project_likes')
+        ->join('projects_details', 'project_likes.project_id', '=', 'projects_details.id')
+        ->where('project_likes.vendor_id', $vendorId)
+        ->select(
+            'projects_details.project_name',
+            'projects_details.budget_range',
+            'projects_details.expected_timeline',
+            'projects_details.id'
+        );
+
+    // Optional: add filters if needed
+    if ($request->project_name) {
+        $query->where('projects_details.project_name', 'like', '%' . $request->project_name . '%');
+    }
+
+    if ($request->budget_range) {
+        $query->where('projects_details.budget_range', 'like', '%' . $request->budget_range . '%');
+    }
+
+    return DataTables::of($query)->make(true);
+}
 
     public function projectlikes(Request $request)
     {
