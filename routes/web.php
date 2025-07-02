@@ -92,9 +92,11 @@ Route::get('/project-details-vendor/{id}', [VenderController::class, 'projectsho
     Route::get('/vendor_dashboard', [VenderController::class, 'vendor_dashboard'])->name('vendor_dashboard');
     Route::get('/engineer_dashboard', [EngginerController::class, 'engineer_dashboard'])->name('engineer_dashboard');
     Route::get('/NewProject', [EngginerController::class, 'allprojectdata'])->name('NewProject');
-    // Route::get('/project/{id}', [EngineerController::class, 'projectshow'])->name('project.show');
+    Route::get('/NewProjectBoq', [EngginerController::class, 'NewProjectBoq'])->name('NewProjectBoq');
 
     Route::post('/engineer/project/update-remarks', [EngginerController::class, 'updateRemarks']);
+    Route::post('/engineer/project/update-call-response', [EngginerController::class, 'updateCallResponse']);
+    Route::post('/engineer/project/upload-boq', [EngginerController::class, 'uploadBOQ']);
 
     // Add all other protected routes here...
 // });

@@ -16,7 +16,6 @@
 
 <body class="flex bg-gray-100 text-gray-800" x-data="{ sidebarOpen: true }">
 
-  <!-- Sidebar -->
   <aside 
     :class="sidebarOpen ? 'w-64' : 'w-16'" 
     class="h-screen bg-gray-900 text-white flex flex-col transition-all duration-300 ease-in-out relative"
@@ -48,21 +47,41 @@
 
       <!-- Project Dropdown -->
       <div>
-        <button @click="sections.engineer = !sections.engineer"
+        <button @click="sections.project = !sections.project"
                 class="w-full flex justify-between items-center px-3 py-2 hover:bg-gray-800 rounded">
           <div class="flex items-center">
             <span class="material-icons mr-2">folder</span>
             <span x-show="sidebarOpen">Project</span>
           </div>
           <span class="material-icons text-sm" x-show="sidebarOpen"
-                x-text="sections.engineer ? 'expand_less' : 'expand_more'"></span>
+                x-text="sections.project ? 'expand_less' : 'expand_more'"></span>
         </button>
 
         <!-- Dropdown links -->
-        <ul x-show="sections.engineer && sidebarOpen" x-transition class="pl-10 mt-1 space-y-1" x-cloak>
+        <ul x-show="sections.project && sidebarOpen" x-transition class="pl-10 mt-1 space-y-1" x-cloak>
           <li>
             <a href="{{ route('NewProject') }}"
                class="block px-2 py-1 text-sm rounded hover:bg-gray-800">New Project</a>
+          </li>
+        </ul>
+      </div>
+
+       <div>
+        <button @click="sections.boq = !sections.boq"
+                class="w-full flex justify-between items-center px-3 py-2 hover:bg-gray-800 rounded">
+          <div class="flex items-center">
+            <span class="material-icons mr-2">folder</span>
+            <span x-show="sidebarOpen">BOQ</span>
+          </div>
+          <span class="material-icons text-sm" x-show="sidebarOpen"
+                x-text="sections.boq ? 'expand_less' : 'expand_more'"></span>
+        </button>
+
+        <!-- Dropdown links -->
+        <ul x-show="sections.boq && sidebarOpen" x-transition class="pl-10 mt-1 space-y-1" x-cloak>
+          <li>
+            <a href="{{ route('NewProjectBoq') }}"
+               class="block px-2 py-1 text-sm rounded hover:bg-gray-800">Project BOQ</a>
           </li>
         </ul>
       </div>
