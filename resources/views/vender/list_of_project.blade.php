@@ -24,9 +24,12 @@
 <div class="container py-5">
   <div class="card shadow-sm">
     <div class="card-body">
+      <div class="col-md-10 text-end mt-3">
+        <a href="{{ url()->previous() }}" class="btn btn-outline-secondary">
+          <i class="bi bi-arrow-left"></i> Back
+        </a>
+      </div>
       <h3 class="mb-4 text-primary">🔍 Explore Projects</h3>
-
-      <!-- Filter Form -->
       <form id="filterForm" class="row g-3 mb-4">
         <div class="col-md-4">
           <label class="form-label fw-semibold">Project Type</label>
@@ -41,8 +44,6 @@
           <button type="button" id="resetBtn" class="btn btn-outline-secondary w-50">♻️ Reset</button>
         </div>
       </form>
-
-      <!-- Projects Table -->
       <div class="table-responsive">
         <table id="projectsTable" class="table table-hover table-bordered align-middle">
           <thead class="table-light">

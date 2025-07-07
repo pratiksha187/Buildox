@@ -16,10 +16,9 @@ class CoustomerController extends Controller
    
     public function project()
     {
-      
         $construction_types = DB::table('categories')->orderBy('id')->get();
-
-        return view('customer.project', compact('construction_types'));
+        $role_types = DB::table('role')->get();
+        return view('customer.project', compact('construction_types','role_types'));
     }
 
     public function getProjectTypes($constructionTypeId)
@@ -41,7 +40,6 @@ class CoustomerController extends Controller
         return response()->json($subs);
     }
 
-
     public function store(Request $request)
     {
         $validated = $request->validate([
@@ -50,6 +48,7 @@ class CoustomerController extends Controller
             'email' => 'nullable|email|max:255',
             'password' => 'required',
             'role' => 'required',
+            // 'budget' => 'required',
             'construction_type' => 'required',
             'project_type' => 'required',
             'sub_categories' => 'nullable|array',
@@ -57,7 +56,6 @@ class CoustomerController extends Controller
             'profile_image' => 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:2048',
         ]);
 
-        // Additional validation for land fields if plot is ready
         if ($request->plot_ready) {
             $request->validate([
                 'land_location' => 'nullable|string|max:255',
@@ -72,7 +70,6 @@ class CoustomerController extends Controller
             ]);
         }
 
-        // Check for duplicate phone number
         if (ProjectInformation::where('phone_number', $validated['phone_number'])->exists()) {
             return response()->json([
                 'status' => 'exists',
@@ -80,7 +77,6 @@ class CoustomerController extends Controller
             ], 409);
         }
 
-        // Handle profile image upload
         $imagePath = null;
         if ($request->hasFile('profile_image')) {
             $imagePath = $request->file('profile_image')->store('profile_images', 'public');
@@ -90,7 +86,6 @@ class CoustomerController extends Controller
             $boqFilePath = $request->file('boqFile')->store('boq_files', 'public');
         }
 
-        // Save to database
         $project = ProjectInformation::create([
             'full_name' => $validated['full_name'],
             'phone_number' => $validated['phone_number'],
@@ -103,8 +98,6 @@ class CoustomerController extends Controller
             'plot_ready' => $validated['plot_ready'],
             'profile_image' => $imagePath,
             'login_id' => 3,
-
-            // Land-related fields (conditionally saved)
             'land_location' => $request->land_location,
             'land_type' => $request->land_type,
             'survey_no' => $request->survey_no,
@@ -129,13 +122,11 @@ class CoustomerController extends Controller
 
     public function project_details($id){
         $project = ProjectInformation::findOrFail($id);
-        //  return view('project.details', compact('project'));
         return view('customer.project_detail', compact('project'));
     }
 
     public function project_details_store(Request $request)
     {
-        // Validate the request
         $validated = $request->validate([
            
             'project_id' => 'required|integer|exists:project_information,id',
@@ -148,7 +139,6 @@ class CoustomerController extends Controller
             'upload.*' => 'mimes:pdf,doc,jpg,png|max:10240',
         ]);
 
-     
         $exists = ProjectDetails::where('project_name', $validated['project_name'])->exists();
 
         if ($exists) {
@@ -157,7 +147,6 @@ class CoustomerController extends Controller
             ], 422);
         }
 
-        // File upload handling
         $filePaths = [];
         if ($request->hasFile('upload')) {
             foreach ($request->file('upload') as $file) {
@@ -187,7 +176,7 @@ class CoustomerController extends Controller
         ]);
     }
 
-         // Controller
+
     public function storeProjectSession(Request $request)
     {
         session(['project_id' => $request->project_id]);
@@ -195,7 +184,6 @@ class CoustomerController extends Controller
     }
 
     public function conformation_page(Request $request){
-        // $project_id = $request->query('project_id'); 
         $project_id = session('project_id');
         if (!$project_id) {
             return redirect()->back()->withErrors('Project ID not found');
@@ -203,8 +191,6 @@ class CoustomerController extends Controller
         $get_project_det = DB::table('projects_details')
                         ->where('id', $project_id)
                         ->first();
-
-                // print_r($get_project_det);die;
         return view('customer.conformation_page', compact('project_id','get_project_det'));
     }
 
@@ -212,11 +198,9 @@ class CoustomerController extends Controller
     public function customer_dashboard()
     {
         $project_id = session('project_id');
-    // print_r($project_id);die;
         $get_project_det = DB::table('projects_details')
-            ->where('id', $project_id)
-            ->get();
-        // print_r($get_project_det);die;
+                            ->where('id', $project_id)
+                            ->get();
         $firstProject = $get_project_det->first();
 
         if (!$firstProject) {
@@ -236,29 +220,29 @@ class CoustomerController extends Controller
 
     public function projectinquiry(Request $request)
     {
-         $validator = \Validator::make($request->all(), [
-        'name' => 'required|string|max:255',
-        'phone' => 'required|string|max:20',
-        'email' => 'required|email',
-        'project_type' => 'required|string',
-        'project_brief' => 'nullable|string',
-        'preferred_day' => 'nullable|string',
-        'preferred_time' => 'nullable|string',
-    ]);
+        $validator = \Validator::make($request->all(), [
+            'name' => 'required|string|max:255',
+            'phone' => 'required|string|max:20',
+            'email' => 'required|email',
+            'project_type' => 'required|string',
+            'project_brief' => 'nullable|string',
+            'preferred_day' => 'nullable|string',
+            'preferred_time' => 'nullable|string',
+        ]);
 
-    if ($validator->fails()) {
+        if ($validator->fails()) {
+            return response()->json([
+                'success' => false,
+                'errors' => $validator->errors(),
+            ], 422);
+        }
+
+        ProjectInquiry::create($request->all());
+
         return response()->json([
-            'success' => false,
-            'errors' => $validator->errors(),
-        ], 422);
-    }
-
-    ProjectInquiry::create($request->all());
-
-    return response()->json([
-        'success' => true,
-        'message' => 'Your inquiry has been submitted successfully!',
-    ]);
+            'success' => true,
+            'message' => 'Your inquiry has been submitted successfully!',
+        ]);
     }
 
     public function customer_details()
@@ -268,7 +252,7 @@ class CoustomerController extends Controller
     }
 
 
-   public function updateAction(Request $request)
+    public function updateAction(Request $request)
     {
         $request->validate([
             'project_id' => 'required|integer',
@@ -279,12 +263,105 @@ class CoustomerController extends Controller
             ->where('id', $request->project_id)
             ->update(['confirm' => $request->confirm]);
 
-        // Return success even if 0 rows changed (value already set)
         return response()->json([
             'status' => 'success',
             'message' => $updated ? 'Updated successfully' : 'No change needed'
         ]);
     }
 
+    public function vendor_details(){
+        $project_id = session('project_id');
+        return view('customer.vendor_bujet');
+    }
+
+    public function vendor_details_data(Request $request)
+    {
+        $project_id = session('project_id');
+
+        $query = DB::table('projects_details')
+            ->join('tenders', 'tenders.project_id', '=', 'projects_details.id')
+            ->join('project_likes', 'project_likes.project_id', '=', 'projects_details.id')
+            ->where('projects_details.id', $project_id)
+            ->select(
+                'projects_details.id',
+                'projects_details.project_name',
+                'projects_details.submission_id',
+                'projects_details.budget_range',
+                'projects_details.project_location'
+                
+            )
+            ->groupBy(
+                'projects_details.id',
+                'projects_details.project_name',
+                'projects_details.submission_id',
+                'projects_details.budget_range',
+                'projects_details.project_location'
+                
+            );
+
+        // Filter: Project Name
+        if ($request->filled('project_name')) {
+            $query->where('projects_details.project_name', 'like', '%' . $request->project_name . '%');
+        }
+
+        return datatables()->of($query)->make(true);
+    }
+
+    public function tenderDetails(Request $request)
+    {
+        $project_id = $request->project_id;
+
+        $tenders = DB::table('tenders')
+            ->where('project_id', $project_id)
+            ->orderByDesc('id')
+            ->get();
+
+        if ($tenders->isEmpty()) {
+            return response()->json(['status' => 'error', 'message' => 'No tender data found.'], 404);
+        }
+
+        return response()->json(['status' => 'success', 'data' => $tenders]);
+    }
+
+
+
+    public function tenderDocuments(Request $request)
+    {
+        $project_id = $request->project_id;
+
+        $documents = DB::table('tender_documents')
+            ->where('project_id', $project_id)
+            ->select('id', 'boq_file', 'vendor_cost','vendor_id')
+            ->get()
+            ->map(function ($doc) {
+                $doc->document_url = asset('storage/' . $doc->boq_file); // ✅ full URL
+                $doc->file_name = basename($doc->boq_file);              // optional: just the name
+                return $doc;
+            });
+
+        return response()->json([
+            'status' => 'success',
+            'data' => $documents
+        ]);
+    }
+
+
+    public function selectVendor(Request $request)
+    {
+        $request->validate([
+            'project_id' => 'required|integer',
+            'vendor_id' => 'required|integer',
+            'document_id' => 'required|integer',
+        ]);
+
+        DB::table('selected_vendors')->insert([
+            'project_id' => $request->project_id,
+            'vendor_id' => $request->vendor_id,
+            'document_id' => $request->document_id,
+            'created_at' => now(),
+        ]);
+
+        return response()->json(['status' => 'success', 'message' => 'Vendor selection saved.']);
+    }
 
 }

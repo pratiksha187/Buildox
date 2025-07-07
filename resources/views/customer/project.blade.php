@@ -25,8 +25,8 @@
    padding: 0.375rem 0.75rem;
    }
    #suggestions {
-   max-height: 200px; /* 👈 sets scroll height */
-   overflow-y: auto;  /* 👈 enables scroll */
+   max-height: 200px; 
+   overflow-y: auto;  
    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
    z-index: 1000;
    }
@@ -57,6 +57,7 @@
                <input type="text" name="phone_number" id="phone_number" class="form-control" placeholder="Enter phone number">
             </div>
          </div>
+         
          <div class="row mb-3">
             <div class="col-md-6 position-relative">
                <label class="form-label">Email</label>
@@ -68,6 +69,7 @@
                <input type="password" name="password" id="password" class="form-control" placeholder="Enter password">
             </div>
          </div>
+      
          <div class="row mb-3">
             <div class="col-md-6">
                <label for="profile_image" class="form-label">Select Profile Image</label>
@@ -75,17 +77,15 @@
             </div>
             <div class="col-md-6">
                <label for="role" class="form-label">Select Your Role</label>
-               <select class="form-select" id="role" name="role">
-                  <option selected disabled>Choose your role</option>
-                  <option value="1">Private Property Owner</option>
-                  <option value="2">Builder (Residential/Commercial/Mixed Use)</option>
-                  <option value="3">Developer</option>
-                  <option value="4">Factory Head</option>
-                  <option value="5">Institutional Head</option>
-                  <option value="6">Hospitality Owner</option>
+               <select id="role" name="role" class="form-select">
+                  <option value="">Select Role</option>
+                  @foreach($role_types as $role)
+                  <option value="{{ $role->id }}">{{ $role->role }}</option>
+                  @endforeach
                </select>
             </div>
          </div>
+         
          <div class="row mb-3">
             <div class="col-md-6">
                <label for="construction_type" class="form-label">Type of Vendor Needed</label>
@@ -144,7 +144,6 @@
                      <option value="1">sq.ft</option>
                      <option value="2">sq.m</option>
                      <option value="3">Acre</option>
-                     <!-- Add more units if needed -->
                   </select>
                </div>
             </div>

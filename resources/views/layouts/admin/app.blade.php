@@ -66,7 +66,23 @@
               <li><a href="{{ route('const_sub_cat') }}" class="block px-3 py-2 hover:bg-gray-800 rounded text-sm text-gray-300">Construction Sub-Category</a></li>
             </ul>
           </li>
+
+           <li>
+            <button @click="sections.role = !sections.role" 
+                    class="w-full flex justify-between items-center px-3 py-2 text-left hover:bg-gray-800 rounded">
+              <span class="text-sm text-gray-300">Roles</span>
+              <span class="material-icons" x-text="sections.role ? 'expand_less' : 'expand_more'"></span>
+            </button>
+
+            <ul x-show="sections.role" x-transition class="pl-4 mt-2 space-y-2" x-cloak>
+              <li><a href="{{ route('addrole') }}" class="block px-3 py-2 hover:bg-gray-800 rounded text-sm text-gray-300">Roles</a></li>
+             
+            </ul>
+          </li>
         </ul>
+
+
+        
         
       </div>
 
@@ -101,9 +117,14 @@
     </header>
 
     <!-- Page Content -->
-    <section class="p-6">
+    {{-- <section class="p-6">
       @yield('content')
-    </section>
+    </section> --}}
+    <!-- Page Content -->
+  <section class="p-4 sm:p-6 lg:p-8">
+    @yield('content')
+  </section>
+
   </main>
 
 </body>

@@ -13,9 +13,6 @@ class ServiceProvider extends Model
 
     protected $table = 'service_provider';
 
-    /**
-     * The attributes that are mass assignable.
-     */
     protected $fillable = [
         'name',
         'mobile',

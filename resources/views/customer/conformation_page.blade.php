@@ -63,13 +63,13 @@
 <div class="card card-custom text-center">
   <div class="card-header-custom">
     <div class="emoji-icon">🎉</div>
-      <input type="text" name="project_id" value="{{ $project_id }}">
+      <input type="hidden" name="project_id" value="{{ $project_id }}">
 
   </div>
   <div class="card-body p-4">
     <h4 class="fw-bold mb-3">Thank you! Your request has been submitted.</h4>
     <p class="text-muted mb-4">
-      Your project has been received and is now under review by the BuildXO team.
+      Your project has been received and is now under review by the Constructkaro team.
     </p>
 
     <div class="highlight-box text-start">
@@ -85,7 +85,7 @@
   </div>
   <div class="card-footer bg-white border-0">
     <p class="footer-text mt-3 mb-2">Have questions? Contact our support team at<br/>
-      <a href="mailto:support@buildxo.com" class="text-primary">support@buildxo.com</a>
+      <a href="mailto:support@Constructkaro.com" class="text-primary">support@Constructkaro.com</a>
     </p>
   </div>
 </div>

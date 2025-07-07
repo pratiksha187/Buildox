@@ -6,7 +6,9 @@ use Illuminate\Http\Request;
 use App\Models\ProjectDetails;
 use Illuminate\Support\Facades\DB;
 use App\Models\BOQEntry;
+use App\Models\Tender;
 use Maatwebsite\Excel\Facades\Excel;
+
 
 
 class EngginerController extends Controller
@@ -18,15 +20,16 @@ class EngginerController extends Controller
     public function allprojectdata()
     {
         $projects = DB::table('projects_details')
-                    ->join('project_information', 'projects_details.project_id', '=', 'project_information.id')
-                    ->select(
-                        'project_information.*',
-                        'projects_details.*'
-                    )
-                    ->get();
-
+            ->join('project_information', 'projects_details.project_id', '=', 'project_information.id')
+            ->select('project_information.*', 'projects_details.*')
+            ->orderBy('project_information.id', 'desc')
+            ->paginate(10); // Adjust the number as needed
+//             echo"<pre>";
+// print_r($projects);die;
         return view('engg.allprojectdata', compact('projects'));
     }
+
+
 
     public function NewProjectBoq(){
         $projects = DB::table('projects_details')
@@ -36,6 +39,8 @@ class EngginerController extends Controller
                         'projects_details.*'
                     )
                     ->get();
+//                      echo"<pre>";
+// print_r($projects);die;
         return view('engg.projectboq', compact('projects'));
 
     }
@@ -50,7 +55,7 @@ class EngginerController extends Controller
         $project = ProjectDetails::findOrFail($request->id);
         $project->engg_decription = $request->engg_decription;
 
-        $project->save(); // 🛠️ This line is necessary!
+        $project->save(); 
 
         return response()->json(['message' => 'Remarks updated']);
     }
@@ -71,29 +76,80 @@ class EngginerController extends Controller
 
     }
 
-    public function uploadBOQ(Request $request)
+    // public function uploadBOQ(Request $request)
+    // {
+    //     $request->validate([
+    //         'project_id' => 'required|exists:projects_details,id',
+    //         'files' => 'required|array',
+    //         'files.*' => 'file|mimes:xls,xlsx,csv|max:20480',
+    //     ]);
+
+    //     $file = $request->file('files')[0]; 
+    //     $filePath = $file->store('boq_files', 'public'); 
+    //     $get_project_info_id = DB::table('projects_details')
+    //         ->where('id', $request->project_id)->get();
+            
+    //     DB::table('projects_details')
+    //         ->where('id', $request->project_id)
+    //         ->update(['boq_status' => 1]); 
+
+    //     DB::table(' project_information')
+    //         ->where('id', $get_project_info_id[0]->project_id)
+    //         ->update(['boqFile' => $filePath]); 
+    //       dd(DB::getQueryLog());  
+    //     return response()->json(['message' => 'BOQ file uploaded successfully!', 'path' => $filePath]);
+    // }
+public function uploadBOQ(Request $request)
+{
+    $request->validate([
+        'project_id' => 'required|exists:projects_details,id',
+        'files' => 'required|array',
+        'files.*' => 'file|mimes:xls,xlsx,csv|max:20480',
+    ]);
+
+    $file = $request->file('files')[0]; 
+    $filePath = $file->store('boq_files', 'public'); 
+
+    $get_project_info_id = DB::table('projects_details')
+        ->where('id', $request->project_id)
+        ->first(); // use first() instead of get()
+
+    DB::table('projects_details')
+        ->where('id', $request->project_id)
+        ->update(['boq_status' => 1]); 
+
+    DB::table('project_information') // fixed table name
+        ->where('id', $get_project_info_id->project_id)
+        ->update(['boqFile' => $filePath]); 
+
+    return response()->json(['message' => 'BOQ file uploaded successfully!', 'path' => $filePath]);
+}
+
+    public function storetender(Request $request)
     {
-        $request->validate([
+        $validated = $request->validate([
             'project_id' => 'required',
-            'files' => 'required',
-            'files.*' => 'file|mimes:xls,xlsx,csv|max:20480',
+            'tender_value' => 'nullable|numeric',
+            'product_category' => 'nullable|string',
+            'sub_category' => 'nullable|string',
+            'contract_type' => 'nullable|string',
+            'bid_validity_days' => 'nullable|integer',
+            'period_of_work_days' => 'nullable|integer',
+            'location' => 'nullable|string',
+            'pincode' => 'nullable|string',
+            'published_date' => 'nullable|date',
+            'bid_opening_date' => 'nullable|date',
+            'bid_submission_start' => 'nullable|date',
+            'bid_submission_end' => 'nullable|date',
         ]);
 
-        $file = $request->file('files')[0];
+        Tender::create($validated);
 
-        $data = Excel::toArray([], $file);
-        $rows = $data[0]; // First sheet
+        DB::table('projects_details')
+            ->where('id', $request->project_id)
+            ->update(['tender_status' => 1]); 
 
-        foreach (array_slice($rows, 1) as $row) {
-            if (!empty($row[0])) {
-                BOQEntry::create([
-                    'project_id' => $request->project_id,
-                    'item' => $row[0] ?? null
-                ]);
-            }
-        }
-
-        return response()->json(['message' => 'BOQ imported successfully!']);
+        return response()->json(['success' => true, 'message' => 'Tender saved successfully.']);
     }
 
 }

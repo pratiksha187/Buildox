@@ -3,6 +3,8 @@
 @section('title', 'Projects List')
 
 @section('content')
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+
 <style>
   .animate-fade-in {
     animation: fadeIn 0.3s ease-out;
@@ -24,11 +26,11 @@
         </div>
         @endif
 
-        <div class="overflow-x-auto">
+        <div class="table-responsive">
         <table class="min-w-full table-auto border border-collapse text-sm">
-            <thead class="bg-gray-100">
+            <thead class="table-light">
             <tr>
-                <th class="border px-4 py-2">#</th>
+                <th class="border px-4 py-2">Id</th>
                 <th class="border px-4 py-2">Project Name</th>
                 <th class="border px-4 py-2">Address</th>
                 <th class="border px-4 py-2">Description</th>
@@ -38,7 +40,8 @@
             <tbody class="text-gray-700">
             @forelse($projects as $index => $project)
                 <tr class="hover:bg-gray-50">
-                <td class="border px-4 py-2">{{ $index + 1 }}</td>
+                {{-- <td class="border px-4 py-2">{{ $index + 1 }}</td> --}}
+                  <td class="border px-4 py-2">{{ $projects->firstItem() + $index }}</td>
                 <td class="border px-4 py-2">{{ $project->project_name }}</td>
                 <td class="border px-4 py-2">{{ $project->project_location }}</td>
                 <td class="border px-4 py-2">{{ $project->project_description }}</td>
@@ -57,6 +60,8 @@
             </tbody>
         </table>
         </div>
+        {{ $projects->links() }}
+
     </div>
 
     <!-- Main Modal -->
@@ -83,7 +88,7 @@
                 <p class="font-semibold text-sm">🧾 Submission ID:</p>
                 <p x-text="activeProject.submission_id" class="text-sm"></p>
 
-                <p class="font-semibold text-sm mt-2">📁 Files:</p>
+                <p class="font-semibold text-sm mt-2">📁Project Files:</p>
                 <template x-if="activeProject.file_path">
                     <ul class="list-disc list-inside text-blue-600">
                         <template x-for="file in JSON.parse(activeProject.file_path)">
@@ -93,6 +98,23 @@
                         </template>
                     </ul>
                 </template>
+
+               <p class="font-semibold text-sm mt-2">📁 BOQ File:</p>
+                <template x-if="activeProject.boqFile">
+                    <ul class="list-disc list-inside text-blue-600">
+                        <li>
+                            <a 
+                                :href="`/storage/boq_files/${activeProject.boqFile.split('/').pop()}`" 
+                                download 
+                                class="hover:underline text-blue-700 font-medium"
+                                target="_blank">
+                                Download BOQ File
+                            </a>
+                        </li>
+                    </ul>
+                </template>
+
+
             </div>
 
             <div class="mb-6">
@@ -154,7 +176,8 @@
 <script src="https://cdn.tailwindcss.com"></script>
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
-
+<script src="https://cdn.datatables.net/1.13.5/js/jquery.dataTables.min.js"></script>
+<script src="https://cdn.datatables.net/1.13.5/js/dataTables.bootstrap5.min.js"></script>
 <script>
   function submitRemarks(projectId, engg_decription) {
     if (!engg_decription.trim()) {

@@ -1,10 +1,10 @@
-@extends('layouts.app') {{-- or your actual layout file --}}
+@extends('layouts.app') 
 
 @section('title', 'Login')
 
 <div class="min-h-screen flex items-center justify-center bg-gray-100">
   <div class="max-w-md w-full bg-white p-8 rounded-lg shadow">
-    <h2 class="text-2xl font-bold mb-6 text-center">Login to BuildXO</h2>
+    <h2 class="text-2xl font-bold mb-6 text-center">Login to Constructkaro</h2>
 
     <form id="loginForm">
       @csrf

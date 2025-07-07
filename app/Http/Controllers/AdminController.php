@@ -23,8 +23,6 @@ class AdminController extends Controller
         return view('admin.vender_reject_data', compact('vendors'));
     }
 
-    
-
     public function vender_approve_form()
     {
         $vendors = BusinessRegistration::where('approved', 0)->get(); 
@@ -36,6 +34,34 @@ class AdminController extends Controller
         return view('admin.construction_type', compact('categories'));
     }
 
+    public function addrole(){
+        $role = DB::table('role')->orderBy('id', 'desc')->paginate(5);;
+        return view('masters.role',compact('role'));
+
+    }
+
+    public function rolestore(Request $request){
+        $request->validate([
+            'role' => 'required|string|max:255'
+        ]);
+
+        $role = $request->input('role');
+        $roleId = DB::table('role')->insertGetId([
+            'role' => $role,
+            'created_at' => now()
+            
+        ]);
+        $newrole = DB::table('role')->find($roleId);
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Category added successfully!',
+            'role' => [
+                'id' => $newrole->id,
+                'role' => $newrole->role,
+            ]
+        ]);
+    }
 
     public function categorystore(Request $request)
     {
@@ -44,15 +70,11 @@ class AdminController extends Controller
         ]);
 
         $categoryName = $request->input('category');
-
-        // Insert into DB using Query Builder and get inserted ID
         $categoryId = DB::table('categories')->insertGetId([
             'name' => $categoryName,
             'created_at' => now(),
             'updated_at' => now()
         ]);
-
-        // Retrieve the newly added category
         $newCategory = DB::table('categories')->find($categoryId);
 
         return response()->json([
@@ -75,6 +97,16 @@ class AdminController extends Controller
         ]);
     }
 
+    public function deleterole($id)
+    {
+        DB::table('role')->where('id', $id)->delete();
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Role deleted successfully.'
+        ]);
+    }
+
    
     public function project_type() {
         $categories = DB::table('categories')->orderBy('id', 'asc')->get();
@@ -84,10 +116,10 @@ class AdminController extends Controller
             ->select('project_types.id', 'project_types.name as project_name', 'categories.name as category_name')
             ->orderBy('project_types.id', 'asc')
             ->get();
-
+//             echo"<pre>";
+// print_r($projecttypes);die;
         return view('admin.project_type', compact('categories', 'projecttypes'));
     }
-
 
     public function storeProjectType(Request $request)
     {
@@ -121,73 +153,71 @@ class AdminController extends Controller
         ]);
     }
 
-
     public function const_sub_cat() {
-    $project_types = DB::table('project_types')->orderBy('id', 'asc')->get();
+        $project_types = DB::table('project_types')->orderBy('id', 'asc')->get();
 
-    $subcategories = DB::table('construction_sub_categories')
-        ->join('categories', 'construction_sub_categories.category_id', '=', 'categories.id')
-        ->join('project_types', 'construction_sub_categories.project_type_id', '=', 'project_types.id')
-        ->select(
-            'construction_sub_categories.id',
-            'construction_sub_categories.name as subcategory_name',
-            'categories.name as category_name',
-            'project_types.name as project_type_name'
-        )
-        ->orderBy('construction_sub_categories.id', 'asc')
-        ->get();
+        $subcategories = DB::table('construction_sub_categories')
+            ->join('categories', 'construction_sub_categories.category_id', '=', 'categories.id')
+            ->join('project_types', 'construction_sub_categories.project_type_id', '=', 'project_types.id')
+            ->select(
+                'construction_sub_categories.id',
+                'construction_sub_categories.name as subcategory_name',
+                'categories.name as category_name',
+                'project_types.name as project_type_name'
+            )
+            ->orderBy('construction_sub_categories.id', 'asc')
+            ->get();
 
-    return view('admin.const_sub_cat', compact('project_types', 'subcategories'));
-}
+        return view('admin.const_sub_cat', compact('project_types', 'subcategories'));
+    }
 
-// This endpoint will return category by project_type
-public function getCategoryByProjectType($projectTypeId) {
-    $category = DB::table('project_types')
-        ->join('categories', 'project_types.category_id', '=', 'categories.id')
-        ->where('project_types.id', $projectTypeId)
-        ->select('categories.id', 'categories.name')
-        ->first();
+    public function getCategoryByProjectType($projectTypeId) {
+        $category = DB::table('project_types')
+            ->join('categories', 'project_types.category_id', '=', 'categories.id')
+            ->where('project_types.id', $projectTypeId)
+            ->select('categories.id', 'categories.name')
+            ->first();
 
-    return response()->json($category);
-}
+        return response()->json($category);
+    }
 
-public function storeSubCategory(Request $request)
-{
-    $request->validate([
-        'project_type' => 'required|exists:project_types,id',
-        'category_id' => 'required|exists:categories,id',
-        'name' => 'required|string|max:255',
-    ]);
+    public function storeSubCategory(Request $request)
+    {
+        $request->validate([
+            'project_type' => 'required|exists:project_types,id',
+            'category_id' => 'required|exists:categories,id',
+            'name' => 'required|string|max:255',
+        ]);
 
-    $id = DB::table('construction_sub_categories')->insertGetId([
-        'project_type_id' => $request->project_type,
-        'category_id' => $request->category_id,
-        'name' => $request->name,
-        'created_at' => now(),
-        'updated_at' => now(),
-    ]);
+        $id = DB::table('construction_sub_categories')->insertGetId([
+            'project_type_id' => $request->project_type,
+            'category_id' => $request->category_id,
+            'name' => $request->name,
+            'created_at' => now(),
+            'updated_at' => now(),
+        ]);
 
-    $projectType = DB::table('project_types')->find($request->project_type);
-    $category = DB::table('categories')->find($request->category_id);
+        $projectType = DB::table('project_types')->find($request->project_type);
+        $category = DB::table('categories')->find($request->category_id);
 
-    return response()->json([
-        'success' => true,
-        'message' => 'Sub Category added successfully.',
-        'id' => $id,
-        'category' => $category->name,
-        'project_type' => $projectType->name,
-        'name' => $request->name
-    ]);
-}
+        return response()->json([
+            'success' => true,
+            'message' => 'Sub Category added successfully.',
+            'id' => $id,
+            'category' => $category->name,
+            'project_type' => $projectType->name,
+            'name' => $request->name
+        ]);
+    }
 
-public function deleteSubCategory($id)
-{
-    DB::table('construction_sub_categories')->where('id', $id)->delete();
+    public function deleteSubCategory($id)
+    {
+        DB::table('construction_sub_categories')->where('id', $id)->delete();
 
-    return response()->json([
-        'success' => true,
-        'message' => 'Subcategory deleted successfully.'
-    ]);
-}
+        return response()->json([
+            'success' => true,
+            'message' => 'Subcategory deleted successfully.'
+        ]);
+    }
 
 }

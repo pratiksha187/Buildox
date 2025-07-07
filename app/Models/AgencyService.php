@@ -7,6 +7,6 @@ use Illuminate\Database\Eloquent\Model;
 class AgencyService extends Model
 {
     protected $table='agency_services';
-    protected $fillable = ['user_id','agency_type', 'services'];
+    protected $fillable = ['user_id','agency_type', 'services','other_service'];
 
 }

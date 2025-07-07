@@ -7,7 +7,7 @@
 <!-- Main -->
   <div class="main-section">
     <h2 class="fw-bold text-dark">Who are you?</h2>
-    <p class="text-muted">Select your role to proceed with BuildXO</p>
+    <p class="text-muted">Select your role to proceed with Constructkaro</p>
 
     <div class="role-grid">
       <a href="{{ route('project') }}" class="role-card build-role">

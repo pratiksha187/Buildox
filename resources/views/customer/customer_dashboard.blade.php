@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>BuildXO Dashboard</title>
+  <title>Constructkaro Dashboard</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://cdn.jsdelivr.net/npm/alpinejs@3.13.0/dist/cdn.min.js" defer></script>
 </head>
@@ -12,10 +12,18 @@
 <input type="hidden" name="project_det_id" id="project_det_id" value="{{ $project_id }}">
 
 <!-- Header -->
+
 <header class="bg-white shadow">
   <div class="max-w-6xl mx-auto px-6 py-4 flex justify-between items-center">
-    <h1 class="text-2xl font-bold text-blue-600">BuildXO</h1>
-    <nav class="flex items-center space-x-4">
+    <h1 class="text-2xl font-bold text-blue-600">Constructkaro</h1>
+    <nav class="flex items-center space-x-6">
+      
+      <!-- Vendor List Link -->
+      <a href="{{ route('vendor_details')}} " class="text-sm font-medium text-gray-700 hover:text-blue-600">
+        Vendor List
+      </a>
+
+      <!-- User Dropdown -->
       <div class="relative" x-data="{ open: false }">
         <div class="flex items-center space-x-2 cursor-pointer" @click="open = !open">
           <div class="w-9 h-9 rounded-full bg-blue-600 text-white flex items-center justify-center font-semibold">
@@ -29,14 +37,17 @@
             <path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"/>
           </svg>
         </div>
-        <div x-show="open" @click.away="open = false" class="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg py-2 z-50">
-          <a href="{{ route('customer.dashboard') }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Dashboard</a>
-        
-          <form method="POST" action="{{ route('logout') }}">
-              @csrf
-              <button type="submit" class="w-full text-left block px-4 py-2 text-sm text-red-600 hover:bg-red-50">Logout</button>
-          </form>
 
+        <div x-show="open" @click.away="open = false" class="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg py-2 z-50">
+          <a href="{{ route('customer.dashboard') }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
+            Dashboard
+          </a>
+          <form method="POST" action="{{ route('logout') }}">
+            @csrf
+            <button type="submit" class="w-full text-left block px-4 py-2 text-sm text-red-600 hover:bg-red-50">
+              Logout
+            </button>
+          </form>
         </div>
       </div>
     </nav>
@@ -205,7 +216,7 @@
 <!-- Footer -->
 <footer class="bg-white shadow-inner mt-12">
   <div class="max-w-6xl mx-auto px-6 py-4 flex justify-between items-center text-sm text-gray-500">
-    <p>&copy; 2025 BuildXO. All rights reserved.</p>
+    <p>&copy; 2025 Constructkaro. All rights reserved.</p>
     <div class="space-x-4">
       <a href="#" class="hover:text-blue-600">Privacy Policy</a>
       <a href="#" class="hover:text-blue-600">Terms of Service</a>

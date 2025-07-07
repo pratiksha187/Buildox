@@ -13,6 +13,7 @@ use Illuminate\Support\Facades\Auth;
 use Yajra\DataTables\Facades\DataTables;
 use App\Models\ServiceProvider;
 use App\Models\ProjectLike;
+use App\Models\TenderDocument;
 use Illuminate\Support\Facades\Validator;
 
 class VenderController extends Controller
@@ -79,10 +80,9 @@ class VenderController extends Controller
         $user = UsersLogin::where('email', $request->email)->first();
 
         if ($user && Hash::check($request->password, $user->password)) {
-            // Set session
             session([
                 'user_id' => $user->id,
-                'role' => $user->role, // like 'admin', 'vendor', etc.
+                'role' => $user->role,
                 'is_logged_in' => true
             ]);
             return redirect('/dashboard');
@@ -117,23 +117,26 @@ class VenderController extends Controller
         $validated = $request->validate([
             'agency_type' => 'required|string',
             'services' => 'required|array',
+            'other_service' => 'nullable|string|max:255'
         ]);
+
         $vendor_id = session('vendor_id');
+
         AgencyService::create([
             'user_id' => $vendor_id,
             'agency_type' => $validated['agency_type'],
             'services' => json_encode($validated['services']),
+            'other_service' => $validated['other_service'] ?? null,
         ]);
 
         return response()->json(['status' => 'success', 'message' => 'Saved successfully']);
     }
 
     public function about_business(){
-         return view('vender.about_business');
+        $entity_type = DB::table('entity_type')->get(); 
+         return view('vender.about_business',compact('entity_type'));
     }
 
-   
-    
     public function business_store(Request $request)
     {
         $validated = $request->validate([
@@ -171,7 +174,7 @@ class VenderController extends Controller
             'aadhar_section' =>'nullable',
             'cin_section' => 'nullable',
         ]);
-        // $userId = session('user_id');
+       
         $vendor_id = session('vendor_id');
         $approved = 0;
         $validated['user_id'] = $vendor_id;
@@ -220,8 +223,6 @@ class VenderController extends Controller
         $request->validate([
             'status' => 'required|in:1,2',
         ]);
-
-
         $vendor = BusinessRegistration::findOrFail($id);
         $vendor->approved = $request->status;
         $vendor->save();
@@ -229,22 +230,22 @@ class VenderController extends Controller
         return response()->json(['message' => 'Vendor status updated successfully.']);
     }
 
-
-
     public function showListPage()
     {
         return view('vender.list_of_project');
     }
 
-     public function vendor_likes_project()
+    public function vendor_likes_project()
     {
         return view('vender.vendor_likes_project');
     }
 
+    
     public function projectsData(Request $request)
     {
-        $query = ProjectDetails::query();
-
+        $query = ProjectDetails::query()
+                    ->where('boq_status', 1)
+                    ->where('tender_status', 1);
         if ($request->filled('project_name')) {
             $query->where('project_name', 'like', '%' . $request->project_name . '%');
         }
@@ -256,82 +257,49 @@ class VenderController extends Controller
         return DataTables::of($query)->make(true);
     }
 
-    // public function likeprojectsData(Request $request)
-    // {
-    //     $vendorId = $request->query('vendor_id');
-    //     $query = ProjectDetails::query();
+    public function likeprojectsData(Request $request)
+    {
+        $vendorId = session('vendor_id');
 
-    //     if ($request->filled('project_name')) {
-    //         $query->where('project_name', 'like', '%' . $request->project_name . '%');
-    //     }
+        // Join with projects_details table to get project information
+        $query = DB::table('project_likes')
+            ->join('projects_details', 'project_likes.project_id', '=', 'projects_details.id')
+            ->where('project_likes.vendor_id', $vendorId)
+            ->select(
+                'projects_details.project_name',
+                'projects_details.budget_range',
+                'projects_details.expected_timeline',
+                'projects_details.id'
+            );
+//             echo"<pre>";
+// print_r($query);die;
+        // Optional: add filters if needed
+        if ($request->project_name) {
+            $query->where('projects_details.project_name', 'like', '%' . $request->project_name . '%');
+        }
 
-    //     if ($request->filled('budget_range')) {
-    //         $query->where('budget_range', 'like', '%' . $request->budget_range . '%');
-    //     }
+        if ($request->budget_range) {
+            $query->where('projects_details.budget_range', 'like', '%' . $request->budget_range . '%');
+        }
 
-    //     return DataTables::of($query)->make(true);
-    // }
-// public function likeprojectsData(Request $request)
-// {
-//     $vendorId = session('vendor_id');
-
-//     // Start a plain DB query
-//     $query = DB::table('project_likes');
-
-//     // Filter by vendor_id (example: if you store likes in a separate table)
-//     if ($vendorId) {
-//         // Assuming `projects_details` has a column `liked_by` (adjust if needed)
-//         $query->where('vendor_id', $vendorId);
-        
-//     }
-
-//     return DataTables::of($query)->make(true);
-// }
-public function likeprojectsData(Request $request)
-{
-    $vendorId = session('vendor_id');
-
-    // Join with projects_details table to get project information
-    $query = DB::table('project_likes')
-        ->join('projects_details', 'project_likes.project_id', '=', 'projects_details.id')
-        ->where('project_likes.vendor_id', $vendorId)
-        ->select(
-            'projects_details.project_name',
-            'projects_details.budget_range',
-            'projects_details.expected_timeline',
-            'projects_details.id'
-        );
-
-    // Optional: add filters if needed
-    if ($request->project_name) {
-        $query->where('projects_details.project_name', 'like', '%' . $request->project_name . '%');
+        return DataTables::of($query)->make(true);
     }
-
-    if ($request->budget_range) {
-        $query->where('projects_details.budget_range', 'like', '%' . $request->budget_range . '%');
-    }
-
-    return DataTables::of($query)->make(true);
-}
 
     public function projectlikes(Request $request)
     {
         $vendor_id = session('vendor_id');
-
         $request->validate([
             'project_id' => 'required',
         ]);
 
-        // Check if this vendor already liked this project
         $alreadyLiked = ProjectLike::where('project_id', $request->project_id)
                         ->where('vendor_id', $vendor_id)
                         ->exists();
 
         if ($alreadyLiked) {
-            return response()->json(['message' => 'You already liked this project.'], 409); // 409 = Conflict
+            return response()->json(['message' => 'You already liked this project.'], 409); 
         }
 
-        // Save the like
         ProjectLike::create([
             'project_id' => $request->project_id,
             'vendor_id' => $vendor_id,
@@ -352,5 +320,39 @@ public function likeprojectsData(Request $request)
         ]);
     }
 
+  
+    public function storeTenderDocuments(Request $request)
+    {
+        $vendor_id = session('vendor_id'); // get vendor_id from session
+
+        $request->validate([
+            'project_id' => 'required|exists:projects_details,id',
+            'emd_receipt' => 'nullable|file|mimes:pdf|max:2048',
+            'company_profile' => 'nullable|file|mimes:pdf|max:2048',
+            'address_proof' => 'nullable|file|mimes:pdf|max:2048',
+            'gst_certificate' => 'nullable|file|mimes:pdf|max:2048',
+            'work_experience' => 'nullable|file|mimes:pdf|max:2048',
+            'financial_capacity' => 'nullable|file|mimes:pdf|max:2048',
+            'declaration' => 'nullable|file|mimes:pdf|max:2048',
+            'boq_file' => 'nullable|file|mimes:xls,xlsx|max:20480'
+            
+        ]);
+
+        $paths = [];
+
+        // Store each uploaded file
+        foreach ($request->allFiles() as $field => $file) {
+            $paths[$field] = $file->store('tender_docs', 'public');
+        }
+
+        // Merge and create
+        TenderDocument::create(array_merge([
+            'project_id' => $request->project_id,
+            'vendor_id' => $vendor_id, 
+            'vendor_cost' => $request->vendor_cost,
+        ], $paths));
+
+        return response()->json(['message' => 'Tender documents uploaded successfully!']);
+    }
 
 }

@@ -87,16 +87,12 @@
           </div>
           <div class="col-md-6">
             <label class="form-label">Type of Entity *</label>
-            <select class="form-select" id="entity_type" name="entity_type">
-              <option>Select entity type</option>
-              <option value="">Select entity type</option>
-              <option value="1">Private Limited</option>
-              <option value="2">Partnership</option>
-              <option value="3">Proprietorship</option>
-              <option value="4">LLP</option>
-              <option value="5">Public Limited</option>
-              <option value="6">OPC</option>
-              <option value="7">HUF</option>
+          
+            <select id="entity_type" name="entity_type" class="form-select">
+              <option value="">-- Select --</option>
+              @foreach ($entity_type as $entity)
+                <option value="{{ $entity->id }}">{{ $entity->entity_type }}</option>
+              @endforeach
             </select>
           </div>
 
@@ -290,12 +286,12 @@
           'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
         },
         beforeSend: function () {
-          // Optional: Disable button, show loader
+         
         },
         success: function (response) {
           alert('Form submitted successfully!');
           window.location.href = '{{ route("vendor_confiermetion") }}';
-          // Optionally reset form: $('#businessForm')[0].reset();
+         
         },
         error: function (xhr) {
           let errors = xhr.responseJSON.errors;

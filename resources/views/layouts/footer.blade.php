@@ -2,10 +2,10 @@
   <footer class="footer">
     <div class="container">
       <p class="mb-1">
-        By continuing, you agree to BuildXO’s
+        By continuing, you agree to Constructkaro’s
         <a href="#">Terms of Service</a> and <a href="#">Privacy Policy</a>.
       </p>
-      <p class="mb-0">&copy; 2025 BuildXO. Made with ❤️ for builders.</p>
+      <p class="mb-0">&copy; 2025 Constructkaro. Made with ❤️ for builders.</p>
     </div>
   </footer>
 

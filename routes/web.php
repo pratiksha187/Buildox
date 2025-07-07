@@ -49,12 +49,16 @@ Route::get('/vender/like-projects-data', [VenderController::class, 'likeprojects
 Route::get('construction_type', [AdminController::class, 'construction_type'])->name('construction_type');
 
 Route::post('categorystore', [AdminController::class, 'categorystore'])->name('categorystore');
+Route::post('rolestore', [AdminController::class, 'rolestore'])->name('rolestore');
+
+
 Route::post('/category/delete/{id}', [AdminController::class, 'deletecategory'])->name('category.delete');
 
 
 Route::get('project_type', [AdminController::class, 'project_type'])->name('project_type');
 Route::post('/projecttype/store', [AdminController::class, 'storeProjectType'])->name('projecttype.store');
 Route::post('/projecttype/delete/{id}', [AdminController::class, 'deleteProjectType'])->name('projecttype.delete');
+Route::post('/role/delete/{id}', [AdminController::class, 'deleterole'])->name('role.delete');
 
 Route::get('const_sub_cat', [AdminController::class, 'const_sub_cat'])->name('const_sub_cat');
 Route::post('/subcategory/store', [AdminController::class, 'storeSubCategory'])->name('subcategory.store');
@@ -80,8 +84,6 @@ Route::get('/vendor_confiermetion', [VenderController::class, 'vendor_confiermet
 Route::post('/project-likes', [VenderController::class, 'projectlikes']);
 Route::get('/vendor_likes_project', [VenderController::class, 'vendor_likes_project'])->name('vendor_likes_project');
 
-
-
 Route::get('/project-details-vendor/{id}', [VenderController::class, 'projectshow']);
 // Route::post('/project-information', [CoustomerController::class, 'store'])->name('projectinfostore');
     // Route::get('/project', [CoustomerController::class, 'project'])->name('project');
@@ -98,5 +100,23 @@ Route::get('/project-details-vendor/{id}', [VenderController::class, 'projectsho
     Route::post('/engineer/project/update-call-response', [EngginerController::class, 'updateCallResponse']);
     Route::post('/engineer/project/upload-boq', [EngginerController::class, 'uploadBOQ']);
 
+    Route::post('/engineer/project/tender', [EngginerController::class, 'storetender']);
+
     // Add all other protected routes here...
 // });
+
+//roles
+
+
+    Route::get('/addrole', [AdminController::class, 'addrole'])->name('addrole');
+    Route::post('/engineer/tender-documents', [VenderController::class, 'storeTenderDocuments']);
+
+    Route::get('/vendor_details', [CoustomerController::class, 'vendor_details'])->name('vendor_details');
+
+    // Route::get('/vendor-details', [CustomerController::class, 'vendor_details'])->name('vendor.details');
+    Route::get('/vendor-details/data', [CoustomerController::class, 'vendor_details_data'])->name('vendor.details.data');
+
+    Route::get('/vendor/tender/details', [CoustomerController::class, 'tenderDetails'])->name('vendor.tender.details');
+    Route::get('/vendor/tender-documents', [CoustomerController::class, 'tenderDocuments'])->name('vendor.tender.documents');
+
+    Route::post('/vendor/select', [CoustomerController::class, 'selectVendor'])->name('vendor.select');
