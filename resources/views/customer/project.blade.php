@@ -102,6 +102,11 @@
                   <option value="">Select Project Type</option>
                </select>
             </div>
+
+            <div class="col-md-6 mt-3" id="other_project_type_wrapper" style="display: none;">
+               <label class="form-label">Enter Project Type</label>
+               <input type="text" name="other_project_type" id="other_project_type" class="form-control" placeholder="Specify other project type">
+            </div>
          </div>
          <div class="row mb-3">
             <div id="sub_categories_container" class="col-md-6" style="display: none;">
@@ -129,7 +134,7 @@
                      <option value="1">Residential</option>
                      <option value="2">Commercial</option>
                      <option value="3">Industrial</option>
-                     <!-- Add more as needed -->
+                  
                   </select>
                </div>
                <div class="col-md-6">
@@ -248,42 +253,6 @@
        });
      });
    
-     $('#construction_type').on('change', function () {
-       let id = $(this).val();
-       $('#project_type').empty().append('<option value="">Select Project Type</option>');
-       $('#subcategory').empty().append('<option value="">Select Subcategory</option>');
-   
-       if (id) {
-         $.get('/get-project-types/' + id, function (data) {
-           $.each(data, function (i, type) {
-             $('#project_type').append(`<option value="${type.id}">${type.name}</option>`);
-           });
-         });
-       }
-     });
-   
-     $('#project_type').on('change', function () {
-       let id = $(this).val();
-       const container = $('#sub_categories');
-       container.empty();
-       $('#sub_categories_container').hide();
-   
-       if (id) {
-         $.get('/get-subcategories/' + id, function (data) {
-           if (data.length > 0) {
-             data.forEach(sub => {
-               const checkboxHTML = `
-                 <div class="form-check">
-                   <input class="form-check-input" type="checkbox" id="subcat_${sub.id}" name="sub_categories[]" value="${sub.id}">
-                   <label class="form-check-label" for="subcat_${sub.id}">${sub.name}</label>
-                 </div>`;
-               container.append(checkboxHTML);
-             });
-             $('#sub_categories_container').show();
-           }
-         });
-       }
-     });
    });
 </script>
 <script>
@@ -333,4 +302,79 @@
      }
    });
 </script>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script>
+$(document).ready(function () {
+    // Fetch Project Types when Construction Type changes
+    $('#construction_type').on('change', function () {
+        const typeId = $(this).val();
+        $('#project_type').html('<option value="">Loading...</option>');
+        $('#sub_categories_container').hide();
+         $('#other_project_type_wrapper').hide();
+        if (typeId) {
+            $.ajax({
+                url: '/get-project-types',
+                type: 'GET',
+                data: { construction_type_id: typeId },
+                success: function (data) {
+                    $('#project_type').empty().append('<option value="">Select Project Type</option>');
+                    $.each(data, function (index, item) {
+                        $('#project_type').append('<option value="' + item.id + '">' + item.name + '</option>');
+                    });
+
+                     // $('#project_type').append('<option value="other">Other</option>');
+                }
+            });
+
+            $('#project_type').on('change', function () {
+               const selected = $(this).val();
+               if (selected === '6') {
+                     $('#other_project_type_wrapper').slideDown();
+               } else {
+                     $('#other_project_type_wrapper').slideUp();
+               }
+            });
+               }
+            });
+
+    // Fetch Subcategories when Project Type changes
+    $('#project_type').on('change', function () {
+        const projectTypeId = $(this).val();
+        const constructionTypeId = $('#construction_type').val();
+
+        $('#sub_categories').empty();
+        $('#sub_categories_container').hide();
+
+        if (projectTypeId && constructionTypeId) {
+            $.ajax({
+                url: '/get-sub-categories',
+                type: 'GET',
+                data: {
+                    construction_type_id: constructionTypeId,
+                    project_type_id: projectTypeId
+                },
+                success: function (data) {
+                    if (data.length > 0) {
+                        $('#sub_category_title').text();
+                        $('#sub_categories_container').show();
+
+                        $.each(data, function (index, subcat) {
+                           const checkbox = `
+                              <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" name="sub_categories[]" value="${subcat.const_sub_cat_id}" id="subcat_${subcat.const_sub_cat_id}">
+                                    <label class="form-check-label" for="subcat_${subcat.const_sub_cat_id}">
+                                       ${subcat.sub_category_name}
+                                    </label>
+                              </div>`;
+                           $('#sub_categories').append(checkbox);
+                        });
+
+                    }
+                }
+            });
+        }
+    });
+});
+</script>
+
 @endsection

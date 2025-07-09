@@ -12,20 +12,6 @@
     <form id="projecttypeForm">
       @csrf
       <div class="flex flex-col sm:flex-row gap-4">
-       
-        <div class="w-full sm:w-2/3">
-            <select name="project_type" id="project_type" class="w-full px-4 py-2 border rounded" required>
-                <option value="">Select Project Type</option>
-                @foreach($project_types as $project_type)
-                    <option value="{{ $project_type->id }}">{{ $project_type->name }}</option>
-                @endforeach
-            </select>
-            <p id="error-message" class="text-red-500 text-sm mt-1 hidden"></p>
-        </div>
-
-        <div class="w-full sm:w-2/3">
-            <input type="text" name="category" id="category" placeholder="Auto category" class="w-full px-4 py-2 border rounded bg-gray-100" readonly>
-        </div>
 
 
         <div class="w-full sm:w-2/3">
@@ -44,34 +30,15 @@
             <tr>
                 <th class="border px-4 py-2">#</th>
                 <th class="border px-4 py-2">Category</th>
-                <th class="border px-4 py-2">Project Type</th>
-                <th class="border px-4 py-2">Construction Sub Categotry</th>
-
                 <th class="border px-4 py-2">Action</th>
 
             </tr>
         </thead>
-        {{-- <tbody id="projectTypeTableBody">
-            @foreach($project_types as $index => $pt)
-            <tr id="row-{{ $pt->id }}">
-                <td class="border px-4 py-2">{{ $index + 1 }}</td>
-                <td class="border px-4 py-2">{{ $pt->name }}</td>
-                <td class="border px-4 py-2">
-                    <button data-id="{{ $pt->id }}" class="delete-btn bg-red-600 text-white px-2 py-1 rounded hover:bg-red-700">
-                        Delete
-                    </button>
-                </td>
-            </tr>
-
-            @endforeach
-        </tbody> --}}
         <tbody id="projectTypeTableBody">
             @foreach($subcategories as $index => $sub)
             <tr id="row-{{ $sub->id }}">
-                <td class="border px-4 py-2">{{ $index + 1 }}</td>
-                <td class="border px-4 py-2">{{ $sub->category_name }}</td>
-                <td class="border px-4 py-2">{{ $sub->project_type_name }}</td>
-                <td class="border px-4 py-2">{{ $sub->subcategory_name }}</td>
+               <td class="border px-4 py-2">{{ $subcategories->firstItem() + $index }}</td>
+                <td class="border px-4 py-2">{{ $sub->name }}</td>
                 <td class="border px-4 py-2">
                     <button data-id="{{ $sub->id }}" class="delete-btn bg-red-600 text-white px-2 py-1 rounded hover:bg-red-700">
                         Delete
@@ -83,30 +50,18 @@
 
 
     </table>
+    <!-- Add this after the table -->
+    <div class="mt-4">
+        {{ $subcategories->links('pagination::tailwind') }}
+    </div>
+
   </div>
 </div>
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 
 <script>
 $(document).ready(function () {
-    // Load category on project_type change
-    $('#project_type').on('change', function () {
-        let projectTypeId = $(this).val();
-        if (projectTypeId) {
-            $.get('/get-category-by-project-type/' + projectTypeId, function (data) {
-                if (data) {
-                    $('#category').val(data.name);
-                    $('#category').data('id', data.id); // store category_id for backend use
-                } else {
-                    $('#category').val('');
-                }
-            });
-        } else {
-            $('#category').val('');
-        }
-    });
-
-    // Submit form
+ 
     $('#projecttypeForm').on('submit', function (e) {
         e.preventDefault();
 

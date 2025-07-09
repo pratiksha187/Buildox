@@ -21,24 +21,63 @@ class CoustomerController extends Controller
         return view('customer.project', compact('construction_types','role_types'));
     }
 
-    public function getProjectTypes($constructionTypeId)
-    {
-        $projectTypes = DB::table('project_types')
-            ->where('category_id', $constructionTypeId)
-            ->select('id', 'name')
-            ->get();
+//      public function getProjectTypes(Request $request)
+// {
+//     // print_r($_POST);die;
+//     $types = DB::table('project_types')
+//         ->where('id', $request->construction_type_id)
+//         ->get();
+// // print_r($types);die;
+//     return response()->json($types);
+// }
+public function getProjectTypes(Request $request)
+{
+    $category_id = $request->construction_type_id;
 
-        return response()->json($projectTypes);
-    }
+    $types = DB::table('project_cat_type')
+        ->join('project_types', 'project_cat_type.project_types_id', '=', 'project_types.id')
+        ->where('project_cat_type.categories_id', $category_id)
+        ->select('project_types.id', 'project_types.name')
+        ->distinct()
+        ->get();
 
-    public function getSubcategories($project_type_id)
-    {
-        $subs = DB::table('construction_sub_categories')
-                ->where('project_type_id', $project_type_id)
-                ->get(['id', 'name']);
+    return response()->json($types);
+}
 
-        return response()->json($subs);
-    }
+
+public function getSubCategories(Request $request)
+{
+    $project_type_id = $request->project_type_id;
+    $category_id = $request->construction_type_id;
+
+    // Join tables to get subcategory names
+    $results = DB::table('project_cat_type')
+        ->join('construction_sub_categories', 'project_cat_type.const_sub_cat_id', '=', 'construction_sub_categories.id')
+        ->where('project_cat_type.project_types_id', $project_type_id)
+        ->where('project_cat_type.categories_id', $category_id)
+        ->select('construction_sub_categories.id as const_sub_cat_id', 'construction_sub_categories.name as sub_category_name')
+        ->get();
+
+    return response()->json($results);
+}
+    // public function getProjectTypes($constructionTypeId)
+    // {
+    //     $projectTypes = DB::table('project_types')
+    //         ->where('category_id', $constructionTypeId)
+    //         ->select('id', 'name')
+    //         ->get();
+
+    //     return response()->json($projectTypes);
+    // }
+
+    // public function getSubcategories($project_type_id)
+    // {
+    //     $subs = DB::table('construction_sub_categories')
+    //             ->where('project_type_id', $project_type_id)
+    //             ->get(['id', 'name']);
+
+    //     return response()->json($subs);
+    // }
 
     public function store(Request $request)
     {
@@ -52,6 +91,7 @@ class CoustomerController extends Controller
             'construction_type' => 'required',
             'project_type' => 'required',
             'sub_categories' => 'nullable|array',
+            // 'other_project_type' =>'nullable',
             'plot_ready' => 'required|boolean',
             'profile_image' => 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:2048',
         ]);
@@ -103,6 +143,7 @@ class CoustomerController extends Controller
             'survey_no' => $request->survey_no,
             'area' => $request->area,
             'area_unit' => $request->area_unit,
+            'other_project_type' =>$request->other_project_type,
             'has_arch_drawing' => $request->has('has_arch_drawing'),
             'has_structural_drawing' => $request->has('has_structural_drawing'),
             'boqFile' => $boqFilePath,
@@ -363,5 +404,9 @@ class CoustomerController extends Controller
 
         return response()->json(['status' => 'success', 'message' => 'Vendor selection saved.']);
     }
+
+
+   
+
 
 }

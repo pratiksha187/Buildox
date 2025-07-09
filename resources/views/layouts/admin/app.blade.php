@@ -64,6 +64,8 @@
               <li><a href="{{ route('construction_type') }}" class="block px-3 py-2 hover:bg-gray-800 rounded text-sm text-gray-300">Construction Type</a></li>
               <li><a href="{{ route('project_type') }}" class="block px-3 py-2 hover:bg-gray-800 rounded text-sm text-gray-300">Project Type</a></li>
               <li><a href="{{ route('const_sub_cat') }}" class="block px-3 py-2 hover:bg-gray-800 rounded text-sm text-gray-300">Construction Sub-Category</a></li>
+              <li><a href="{{ route('proj_const_sub_cat') }}" class="block px-3 py-2 hover:bg-gray-800 rounded text-sm text-gray-300">project/Construction/Sub</a></li>
+
             </ul>
           </li>
 

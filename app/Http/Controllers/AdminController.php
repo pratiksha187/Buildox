@@ -109,27 +109,23 @@ class AdminController extends Controller
 
    
     public function project_type() {
-        $categories = DB::table('categories')->orderBy('id', 'asc')->get();
+        // $categories = DB::table('categories')->orderBy('id', 'asc')->get();
 
         $projecttypes = DB::table('project_types')
-            ->join('categories', 'project_types.category_id', '=', 'categories.id')
-            ->select('project_types.id', 'project_types.name as project_name', 'categories.name as category_name')
+            // ->join('categories', 'project_types.category_id', '=', 'categories.id')
+            ->select('project_types.*')
             ->orderBy('project_types.id', 'asc')
             ->get();
-//             echo"<pre>";
-// print_r($projecttypes);die;
-        return view('admin.project_type', compact('categories', 'projecttypes'));
+        return view('admin.project_type', compact( 'projecttypes'));
     }
 
     public function storeProjectType(Request $request)
     {
         $request->validate([
-            'category' => 'required|exists:categories,id',
             'projecttype' => 'required|string|max:255'
         ]);
 
        $id = DB::table('project_types')->insertGetId([
-            'category_id' => $request->category,
             'name' => $request->projecttype,
             'created_at' => now(),
             'updated_at' => now()
@@ -154,31 +150,12 @@ class AdminController extends Controller
     }
 
     public function const_sub_cat() {
-        $project_types = DB::table('project_types')->orderBy('id', 'asc')->get();
-
         $subcategories = DB::table('construction_sub_categories')
-            ->join('categories', 'construction_sub_categories.category_id', '=', 'categories.id')
-            ->join('project_types', 'construction_sub_categories.project_type_id', '=', 'project_types.id')
-            ->select(
-                'construction_sub_categories.id',
-                'construction_sub_categories.name as subcategory_name',
-                'categories.name as category_name',
-                'project_types.name as project_type_name'
-            )
+            ->select('construction_sub_categories.*')
             ->orderBy('construction_sub_categories.id', 'asc')
-            ->get();
+            ->paginate(10); // Enable pagination (10 items per page)
 
-        return view('admin.const_sub_cat', compact('project_types', 'subcategories'));
-    }
-
-    public function getCategoryByProjectType($projectTypeId) {
-        $category = DB::table('project_types')
-            ->join('categories', 'project_types.category_id', '=', 'categories.id')
-            ->where('project_types.id', $projectTypeId)
-            ->select('categories.id', 'categories.name')
-            ->first();
-
-        return response()->json($category);
+        return view('admin.const_sub_cat', compact('subcategories'));
     }
 
     public function storeSubCategory(Request $request)
@@ -218,6 +195,53 @@ class AdminController extends Controller
             'success' => true,
             'message' => 'Subcategory deleted successfully.'
         ]);
+    }
+
+    public function storeProjectCatType(Request $request)
+    {
+        $request->validate([
+            'categories_id' => 'required',
+            'project_types_id' => 'required',
+            'const_sub_cat_id' => 'required',
+        ]);
+
+        DB::table('project_cat_type')->insert([
+            'categories_id' => $request->categories_id,
+            'project_types_id' => $request->project_types_id,
+            'const_sub_cat_id' => $request->const_sub_cat_id,
+            'created_at' => now(),
+            'updated_at' => now(),
+        ]);
+
+        return response()->json([
+            'message' => 'Project Category Type saved successfully!',
+        ]);
+    }
+
+    public function proj_const_sub_cat()
+    {
+        $categories = DB::table('categories')->orderBy('name')->get(); 
+        $project_types = DB::table('project_types')->orderBy('name')->get(); 
+        $construction_sub_categories = DB::table('construction_sub_categories')->orderBy('name')->get(); 
+
+        $entries = DB::table('project_cat_type')
+            ->join('categories', 'project_cat_type.categories_id', '=', 'categories.id')
+            ->join('project_types', 'project_cat_type.project_types_id', '=', 'project_types.id')
+            ->join('construction_sub_categories', 'project_cat_type.const_sub_cat_id', '=', 'construction_sub_categories.id')
+            ->select(
+                'project_cat_type.id',
+                'categories.name as category',
+                'project_types.name as project_type',
+                'construction_sub_categories.name as sub_category'
+            )
+            ->paginate(10);
+            // ->get();
+        return view('admin.proj_const_sub_cat', compact(
+            'categories',
+            'project_types',
+            'construction_sub_categories',
+            'entries'
+        ));
     }
 
 }

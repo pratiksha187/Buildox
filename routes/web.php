@@ -13,7 +13,7 @@ Route::get('/', [CoustomerController::class, 'home'])->name('home');
 
 Route::get('/project', [CoustomerController::class, 'project'])->name('project');
 
-Route::get('/get-project-types/{constructionTypeId}', [CoustomerController::class, 'getProjectTypes']);
+// Route::get('/get-project-types/{constructionTypeId}', [CoustomerController::class, 'getProjectTypes']);
 Route::get('/get-subcategories/{projectTypeId}', [CoustomerController::class, 'getSubCategories']);
 
 Route::post('/save-agency-services', [VenderController::class, 'save_agency_services'])->name('save.agency.services');
@@ -88,8 +88,9 @@ Route::get('/project-details-vendor/{id}', [VenderController::class, 'projectsho
 // Route::post('/project-information', [CoustomerController::class, 'store'])->name('projectinfostore');
     // Route::get('/project', [CoustomerController::class, 'project'])->name('project');
 
-// Route::middleware(['CheckUserLogin'])->group(function () {
-    Route::get('/admin_dashboard', [AdminController::class, 'admin_dashboard'])->name('admin_dashboard');
+    Route::middleware(['CheckUserLogin'])->group(function () {
+        Route::get('/admin_dashboard', [AdminController::class, 'admin_dashboard'])->name('admin_dashboard');
+    });
     Route::get('/customer-dashboard', [CoustomerController::class, 'customer_dashboard'])->name('customer.dashboard');
     Route::get('/vendor_dashboard', [VenderController::class, 'vendor_dashboard'])->name('vendor_dashboard');
     Route::get('/engineer_dashboard', [EngginerController::class, 'engineer_dashboard'])->name('engineer_dashboard');
@@ -120,3 +121,11 @@ Route::get('/project-details-vendor/{id}', [VenderController::class, 'projectsho
     Route::get('/vendor/tender-documents', [CoustomerController::class, 'tenderDocuments'])->name('vendor.tender.documents');
 
     Route::post('/vendor/select', [CoustomerController::class, 'selectVendor'])->name('vendor.select');
+
+    Route::get('/proj_const_sub_cat', [AdminController::class, 'proj_const_sub_cat'])->name('proj_const_sub_cat');
+    Route::post('/project-cat-type/store', [AdminController::class, 'storeProjectCatType'])->name('project.cat.type.store');
+Route::get('/get-project-types-filtered/{id}', [CoustomerController::class, 'getFilteredProjectTypes']);
+Route::get('/get-subcategories/{project_type_id}', [CoustomerController::class, 'getSubCategoriesdata']);
+
+Route::get('/get-project-types', [CoustomerController::class, 'getProjectTypes']);
+Route::get('/get-sub-categories', [CoustomerController::class, 'getSubCategories']);
