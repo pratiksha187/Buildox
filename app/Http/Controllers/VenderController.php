@@ -173,6 +173,10 @@ class VenderController extends Controller
             'license_certificate_file' => 'nullable|file|mimes:pdf,jpg,jpeg,png',
             'aadhar_section' =>'nullable',
             'cin_section' => 'nullable',
+            'llpin_no' => 'nullable|string',
+            'uploadadharpanFile' => 'nullable|file|mimes:pdf,jpg,jpeg,png',
+            'agreed_declaration' => 'nullable',
+
         ]);
        
         $vendor_id = session('vendor_id');
@@ -180,13 +184,15 @@ class VenderController extends Controller
         $validated['user_id'] = $vendor_id;
         $validated['approved'] = $approved;
        
+       
         $fileFields = [
-            'cancelled_cheque_file', 'pan_card_file', 'aadhaar_card_file',
-            'certificate_of_incorporation_file', 'itr_file', 'turnover_certificate_file',
-            'work_completion_certificates_file', 'pf_esic_documents_file',
-            'company_profile_file', 'portfolio_file', 'past_work_photos_file',
-            'license_certificate_file'
-        ];
+                'cancelled_cheque_file', 'pan_card_file', 'aadhaar_card_file',
+                'certificate_of_incorporation_file', 'itr_file', 'turnover_certificate_file',
+                'work_completion_certificates_file', 'pf_esic_documents_file',
+                'company_profile_file', 'portfolio_file', 'past_work_photos_file',
+                'license_certificate_file', 'uploadadharpanFile'
+            ];
+
 
         foreach ($fileFields as $field) {
             if ($request->hasFile($field)) {

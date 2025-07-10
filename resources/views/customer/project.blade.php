@@ -40,6 +40,47 @@
    .position-relative {
    position: relative;
    }
+    body, html {
+      height: 100%;
+      margin: 0;
+    }
+
+    .center-page {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 28vh;
+      background-color: #f8f9fa;
+    }
+
+    .form-switch.custom-switch .form-check-input {
+      width: 2.5em;
+      height: 1.4em;
+      background-color: #ccc;
+      border-radius: 2em;
+      transition: background-color 0.3s ease;
+      cursor: pointer;
+    }
+
+    .form-switch.custom-switch .form-check-input:checked {
+      background-color: #4caf50;
+    }
+
+    .form-switch.custom-switch .form-check-input:focus {
+      box-shadow: 0 0 0 0.15rem rgba(76, 175, 80, 0.25);
+    }
+
+    .form-switch.custom-switch .form-check-label {
+      margin-left: 0.75rem;
+      font-weight: 500;
+      font-size: 1.1rem;
+      color: #333;
+    }
+
+    .custom-form-group {
+      display: flex;
+      align-items: center;
+    }
 </style>
 <div class="container my-5">
    <div class="form-section shadow-sm">
@@ -115,10 +156,17 @@
                <div id="sub_categories" name="sub_categories" class="form-check d-flex flex-column gap-2 mt-2"></div>
             </div>
          </div>
-         <div class="form-check form-switch mb-4">
+         {{-- <div class="form-check form-switch mb-4">
             <input class="form-check-input" type="checkbox" id="plot_ready" name="plot_ready">
             <label class="form-check-label" for="plot_ready">Do you have your plot/site ready?</label>
-         </div>
+         </div> --}}
+           <div class="center-page">
+    <div class="form-check form-switch custom-switch custom-form-group">
+      <input class="form-check-input" type="checkbox" id="plot_ready" name="plot_ready">
+      <label class="form-check-label" for="plot_ready">Do you have your plot/site ready?</label>
+    </div>
+  </div>
+
          <div id="plotDetailsSection" style="display: none;">
             <div class="row mb-3">
                <div class="col-md-12">

@@ -129,3 +129,5 @@ Route::get('/get-subcategories/{project_type_id}', [CoustomerController::class, 
 
 Route::get('/get-project-types', [CoustomerController::class, 'getProjectTypes']);
 Route::get('/get-sub-categories', [CoustomerController::class, 'getSubCategories']);
+
+Route::get('test', [CoustomerController::class, 'test']);

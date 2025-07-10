@@ -109,10 +109,9 @@ class AdminController extends Controller
 
    
     public function project_type() {
-        // $categories = DB::table('categories')->orderBy('id', 'asc')->get();
-
+       
         $projecttypes = DB::table('project_types')
-            // ->join('categories', 'project_types.category_id', '=', 'categories.id')
+       
             ->select('project_types.*')
             ->orderBy('project_types.id', 'asc')
             ->get();

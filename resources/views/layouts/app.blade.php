@@ -45,7 +45,7 @@
     }
 
     .role-card {
-      width: 280px;
+      width: 255px;
       border-radius: 20px;
       padding: 30px 25px;
       color: white;

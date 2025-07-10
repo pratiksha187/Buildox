@@ -21,63 +21,36 @@ class CoustomerController extends Controller
         return view('customer.project', compact('construction_types','role_types'));
     }
 
-//      public function getProjectTypes(Request $request)
-// {
-//     // print_r($_POST);die;
-//     $types = DB::table('project_types')
-//         ->where('id', $request->construction_type_id)
-//         ->get();
-// // print_r($types);die;
-//     return response()->json($types);
-// }
-public function getProjectTypes(Request $request)
-{
-    $category_id = $request->construction_type_id;
+    public function getProjectTypes(Request $request)
+    {
+        $category_id = $request->construction_type_id;
 
-    $types = DB::table('project_cat_type')
-        ->join('project_types', 'project_cat_type.project_types_id', '=', 'project_types.id')
-        ->where('project_cat_type.categories_id', $category_id)
-        ->select('project_types.id', 'project_types.name')
-        ->distinct()
-        ->get();
+        $types = DB::table('project_cat_type')
+            ->join('project_types', 'project_cat_type.project_types_id', '=', 'project_types.id')
+            ->where('project_cat_type.categories_id', $category_id)
+            ->select('project_types.id', 'project_types.name')
+            ->distinct()
+            ->get();
 
-    return response()->json($types);
-}
+        return response()->json($types);
+    }
 
 
-public function getSubCategories(Request $request)
-{
-    $project_type_id = $request->project_type_id;
-    $category_id = $request->construction_type_id;
+    public function getSubCategories(Request $request)
+    {
+        $project_type_id = $request->project_type_id;
+        $category_id = $request->construction_type_id;
 
-    // Join tables to get subcategory names
-    $results = DB::table('project_cat_type')
-        ->join('construction_sub_categories', 'project_cat_type.const_sub_cat_id', '=', 'construction_sub_categories.id')
-        ->where('project_cat_type.project_types_id', $project_type_id)
-        ->where('project_cat_type.categories_id', $category_id)
-        ->select('construction_sub_categories.id as const_sub_cat_id', 'construction_sub_categories.name as sub_category_name')
-        ->get();
+        // Join tables to get subcategory names
+        $results = DB::table('project_cat_type')
+            ->join('construction_sub_categories', 'project_cat_type.const_sub_cat_id', '=', 'construction_sub_categories.id')
+            ->where('project_cat_type.project_types_id', $project_type_id)
+            ->where('project_cat_type.categories_id', $category_id)
+            ->select('construction_sub_categories.id as const_sub_cat_id', 'construction_sub_categories.name as sub_category_name')
+            ->get();
 
-    return response()->json($results);
-}
-    // public function getProjectTypes($constructionTypeId)
-    // {
-    //     $projectTypes = DB::table('project_types')
-    //         ->where('category_id', $constructionTypeId)
-    //         ->select('id', 'name')
-    //         ->get();
-
-    //     return response()->json($projectTypes);
-    // }
-
-    // public function getSubcategories($project_type_id)
-    // {
-    //     $subs = DB::table('construction_sub_categories')
-    //             ->where('project_type_id', $project_type_id)
-    //             ->get(['id', 'name']);
-
-    //     return response()->json($subs);
-    // }
+        return response()->json($results);
+    }
 
     public function store(Request $request)
     {
@@ -406,7 +379,9 @@ public function getSubCategories(Request $request)
     }
 
 
-   
+   public function test(){
+    return view('test');
+   }
 
 
 }

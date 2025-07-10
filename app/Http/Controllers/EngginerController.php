@@ -75,30 +75,6 @@ class EngginerController extends Controller
         return response()->json(['message' => 'CallResponse updated']);
 
     }
-
-    // public function uploadBOQ(Request $request)
-    // {
-    //     $request->validate([
-    //         'project_id' => 'required|exists:projects_details,id',
-    //         'files' => 'required|array',
-    //         'files.*' => 'file|mimes:xls,xlsx,csv|max:20480',
-    //     ]);
-
-    //     $file = $request->file('files')[0]; 
-    //     $filePath = $file->store('boq_files', 'public'); 
-    //     $get_project_info_id = DB::table('projects_details')
-    //         ->where('id', $request->project_id)->get();
-            
-    //     DB::table('projects_details')
-    //         ->where('id', $request->project_id)
-    //         ->update(['boq_status' => 1]); 
-
-    //     DB::table(' project_information')
-    //         ->where('id', $get_project_info_id[0]->project_id)
-    //         ->update(['boqFile' => $filePath]); 
-    //       dd(DB::getQueryLog());  
-    //     return response()->json(['message' => 'BOQ file uploaded successfully!', 'path' => $filePath]);
-    // }
 public function uploadBOQ(Request $request)
 {
     $request->validate([
