@@ -137,8 +137,6 @@
 
   <nav>
     <a href="{{ route('vendor_details') }}">Vendor List</a>
-
-    <!-- User Dropdown -->
     <div class="relative" @click.away="open = false">
       <div class="user-dropdown" @click="open = !open">
         <div class="avatar">{{ strtoupper(substr($proj_data->full_name ?? 'U', 0, 1)) }}</div>

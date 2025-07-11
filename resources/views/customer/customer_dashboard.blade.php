@@ -56,20 +56,19 @@
                 </td>
                 <td class="px-6 py-4">{{ \Carbon\Carbon::parse($project->created_at)->format('d M Y') }}</td>
                 <td class="px-6 py-4">
-                  {{-- <button @click="openModal({{ json_encode($project) }})" class="text-[#f25c05] hover:underline font-medium">View</button> --}}
                   <td class="px-6 py-4">
-      <button
-        onclick="openModal(
-          '{{ $project->project_name }}',
-          '{{ $project->confirm == 1 ? 'Under Review' : 'Draft' }}',
-          '{{ $project->description ?? 'No description available.' }}',
-          '{{ \Carbon\Carbon::parse($project->created_at)->format('d M Y') }}'
-        )"
-        class="text-[#f25c05] hover:underline font-medium"
-      >
-        View
-      </button>
-    </td>
+                    <button
+                      onclick="openModal(
+                        '{{ $project->project_name }}',
+                        '{{ $project->confirm == 1 ? 'Under Review' : 'Draft' }}',
+                        '{{ $project->description ?? 'No description available.' }}',
+                        '{{ \Carbon\Carbon::parse($project->created_at)->format('d M Y') }}'
+                      )"
+                      class="text-[#f25c05] hover:underline font-medium"
+                    >
+                      View
+                    </button>
+                  </td>
                 </td>
               </tr>
             @endforeach
@@ -103,14 +102,15 @@
         <p class="text-gray-600 text-sm">Let us guide you from start to finish.</p>
       </div>
       <a href="{{ route('project') }}" class="px-5 py-2 bg-[#f25c05] text-white rounded-lg hover:bg-[#c94a03] transition">+ Add Project</a>
+      <!-- Add this inside the CTA section, below the "+ Add Project" button -->
+      <a href="" class="ml-4 px-5 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition">
+        💳 Make Payment
+      </a>
+
     </section>
 
   </div>
 
-{{-- </main> --}}
-  <!-- Place Modal INSIDE the Alpine scope (before closing </main>) -->
-  <!-- Project Detail Modal -->
-  <!-- Modal -->
 <div id="simpleModal" style="display:none;" class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
   <div class="bg-white w-full max-w-md rounded-lg p-6 relative">
     <button onclick="closeModal()" class="absolute top-2 right-3 text-gray-600 hover:text-gray-900">✕</button>

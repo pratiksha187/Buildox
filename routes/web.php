@@ -29,7 +29,19 @@ Route::get('/get-services/{agency_id}', [VenderController::class, 'getServices']
 Route::post('/save-agency-services', [VenderController::class, 'save_agency_services'])->name('save.agency.services');
 
 Route::get('/login', [AuthController::class, 'showLoginForm']);
+Route::get('/need_help', [CoustomerController::class, 'need_help'])->name('need_help');
+
+
 Route::post('/login', [AuthController::class, 'login'])->name('login');
+Route::post('/projectinquiry', [CoustomerController::class, 'projectinquiry'])->name('projectinquiry');
+// Route::get('/payment_page', [CoustomerController::class, 'payment_page'])->name('payment_page');
+Route::post('/store-project', [CoustomerController::class, 'store'])->name('projectinfostore');
+// Route::get('/payment/{project_id}', [CoustomerController::class, 'payment_page'])->name('payment_page');
+// Route::get('/payment', [CoustomerController::class, 'payment_page'])->name('payment_page');
+
+Route::get('/payment/{email}', [CoustomerController::class, 'payment_page'])->name('payment_page');
+Route::post('/razorpay/payment', [CoustomerController::class, 'razorpaypayment'])->name('razorpaypayment');
+
 // Route::get('/admin_dashboard', [AdminController::class, 'admin_dashboard'])->name('admin_dashboard');
     // ->middleware('authCheck');
 Route::post('/project-information', [CoustomerController::class, 'store'])->name('projectinfostore');

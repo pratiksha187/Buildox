@@ -7,6 +7,9 @@ use App\Models\ProjectInquiry;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Crypt;
+use Razorpay\Api\Api;
+use Illuminate\Contracts\Encryption\DecryptException;
 
 class CoustomerController extends Controller
 {
@@ -52,82 +55,207 @@ class CoustomerController extends Controller
         return response()->json($results);
     }
 
-    public function store(Request $request)
-    {
-        $validated = $request->validate([
-            'full_name' => 'required|string|max:255',
-            'phone_number' => 'required|string|max:20',
-            'email' => 'nullable|email|max:255',
-            'password' => 'required',
-            'role' => 'required',
-            // 'budget' => 'required',
-            'construction_type' => 'required',
-            'project_type' => 'required',
-            'sub_categories' => 'nullable|array',
-            // 'other_project_type' =>'nullable',
-            'plot_ready' => 'required|boolean',
-            'profile_image' => 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:2048',
-        ]);
+    // public function store(Request $request)
+    // {
+    //     $validated = $request->validate([
+    //         'full_name' => 'required|string|max:255',
+    //         'phone_number' => 'required|string|max:20',
+    //         'email' => 'nullable|email|max:255',
+    //         'password' => 'required',
+    //         'role' => 'required',
+    //         // 'budget' => 'required',
+    //         'construction_type' => 'required',
+    //         'project_type' => 'required',
+    //         'sub_categories' => 'nullable|array',
+    //         // 'other_project_type' =>'nullable',
+    //         'plot_ready' => 'required|boolean',
+    //         'profile_image' => 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:2048',
+    //     ]);
 
-        if ($request->plot_ready) {
-            $request->validate([
-                'land_location' => 'nullable|string|max:255',
-                'land_type' => 'nullable|string|max:100',
-                'survey_no' => 'nullable|string|max:100',
-                'area' => 'nullable|numeric',
-                'area_unit' => 'nullable|string|max:50',
-                'has_arch_drawing' => 'nullable',
-                'has_structural_drawing' => 'nullable',
-                'boqCheckbox' => 'nullable',
-                'boqFile' => 'nullable'
+    //     if ($request->plot_ready) {
+    //         $request->validate([
+    //             'land_location' => 'nullable|string|max:255',
+    //             'land_type' => 'nullable|string|max:100',
+    //             'survey_no' => 'nullable|string|max:100',
+    //             'area' => 'nullable|numeric',
+    //             'area_unit' => 'nullable|string|max:50',
+    //             'has_arch_drawing' => 'nullable',
+    //             'has_structural_drawing' => 'nullable',
+    //             'boqCheckbox' => 'nullable',
+    //             'boqFile' => 'nullable'
+    //         ]);
+    //     }
+
+    //     if (ProjectInformation::where('phone_number', $validated['phone_number'])->exists()) {
+    //         return response()->json([
+    //             'status' => 'exists',
+    //             'message' => 'This phone number has already been submitted.'
+    //         ], 409);
+    //     }
+
+    //     $imagePath = null;
+    //     if ($request->hasFile('profile_image')) {
+    //         $imagePath = $request->file('profile_image')->store('profile_images', 'public');
+    //     }
+    //     $boqFilePath = null;
+    //     if ($request->hasFile('boqFile')) {
+    //         $boqFilePath = $request->file('boqFile')->store('boq_files', 'public');
+    //     }
+
+    //     $project = ProjectInformation::create([
+    //         'full_name' => $validated['full_name'],
+    //         'phone_number' => $validated['phone_number'],
+    //         'email' => $validated['email'],
+    //         'password' => Hash::make($validated['password']),
+    //         'role' => $validated['role'],
+    //         'construction_type' => $validated['construction_type'],
+    //         'project_type' => $validated['project_type'],
+    //         'sub_categories' => $request->has('sub_categories') ? json_encode($request->sub_categories) : null,
+    //         'plot_ready' => $validated['plot_ready'],
+    //         'profile_image' => $imagePath,
+    //         'login_id' => 3,
+    //         'land_location' => $request->land_location,
+    //         'land_type' => $request->land_type,
+    //         'survey_no' => $request->survey_no,
+    //         'area' => $request->area,
+    //         'area_unit' => $request->area_unit,
+    //         'other_project_type' =>$request->other_project_type,
+    //         'has_arch_drawing' => $request->has('has_arch_drawing'),
+    //         'has_structural_drawing' => $request->has('has_structural_drawing'),
+    //         'boqFile' => $boqFilePath,
+    //         'boqCheckbox' => $request->boqCheckbox
+    //     ]);
+
+    //     return response()->json([
+    //         'status' => 'success',
+    //         'message' => 'Saved successfully',
+    //         'project_id' => $project->id,
+    //     ]);
+    // }
+
+  public function store(Request $request)
+{
+    // Step 1: Validate fields
+    $validated = $request->validate([
+        'full_name' => 'required|string|max:255',
+        'phone_number' => 'required|string|max:20',
+        'email' => 'nullable|email|max:255',
+        'password' => 'required',
+        'role' => 'required',
+        'construction_type' => 'required',
+        'project_type' => 'required',
+        'sub_categories' => 'nullable|array',
+        'plot_ready' => 'required|boolean',
+        'profile_image' => 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:2048',
+    ]);
+
+    // Step 2: If plot_ready, validate extra fields
+    if ($request->plot_ready) {
+        $request->validate([
+            'land_location' => 'nullable|string|max:255',
+            'land_type' => 'nullable|string|max:100',
+            'survey_no' => 'nullable|string|max:100',
+            'area' => 'nullable|numeric',
+            'area_unit' => 'nullable|string|max:50',
+            'has_arch_drawing' => 'nullable',
+            'has_structural_drawing' => 'nullable',
+            'boqCheckbox' => 'nullable',
+            'boqFile' => 'nullable|file',
+        ]);
+    }
+
+    // Step 3: Check how many projects exist with same email
+    if ($validated['email']) {
+        $existingProjectCount = ProjectInformation::where('email', $validated['email'])->count();
+
+        // Step 4: If already 3 or more, do not save — redirect to payment
+        if ($existingProjectCount >= 3) {
+            $encryptedEmail = Crypt::encryptString($validated['email']);
+            return response()->json([
+                'status' => 'payment_required',
+                'message' => 'You have reached the project submission limit. Please proceed to payment before adding more.',
+                'redirect_to_payment' => true,
+                // 'payment_url' => route('payment_page') // You can pass extra data via session or query string
+                'payment_url' => route('payment_page', ['email' => $encryptedEmail])
             ]);
         }
+    }
 
-        if (ProjectInformation::where('phone_number', $validated['phone_number'])->exists()) {
-            return response()->json([
-                'status' => 'exists',
-                'message' => 'This phone number has already been submitted.'
-            ], 409);
+    // Step 5: Handle file uploads
+    $imagePath = null;
+    if ($request->hasFile('profile_image')) {
+        $imagePath = $request->file('profile_image')->store('profile_images', 'public');
+    }
+
+    $boqFilePath = null;
+    if ($request->hasFile('boqFile')) {
+        $boqFilePath = $request->file('boqFile')->store('boq_files', 'public');
+    }
+
+    // Step 6: Save project
+    $project = ProjectInformation::create([
+        'full_name' => $validated['full_name'],
+        'phone_number' => $validated['phone_number'],
+        'email' => $validated['email'],
+        'password' => Hash::make($validated['password']),
+        'role' => $validated['role'],
+        'construction_type' => $validated['construction_type'],
+        'project_type' => $validated['project_type'],
+        'sub_categories' => $request->has('sub_categories') ? json_encode($request->sub_categories) : null,
+        'plot_ready' => $validated['plot_ready'],
+        'profile_image' => $imagePath,
+        'login_id' => 3,
+        'land_location' => $request->land_location,
+        'land_type' => $request->land_type,
+        'survey_no' => $request->survey_no,
+        'area' => $request->area,
+        'area_unit' => $request->area_unit,
+        'other_project_type' => $request->other_project_type,
+        'has_arch_drawing' => $request->has('has_arch_drawing'),
+        'has_structural_drawing' => $request->has('has_structural_drawing'),
+        'boqFile' => $boqFilePath,
+        'boqCheckbox' => $request->boqCheckbox
+    ]);
+
+    return response()->json([
+        'status' => 'success',
+        'message' => 'Project saved successfully.',
+        'project_id' => $project->id,
+    ]);
+}
+
+
+    public function payment_page($email)
+    {
+        try {
+        $decryptedEmail = Crypt::decryptString($email);
+        } catch (DecryptException $e) {
+            abort(403, 'Invalid or tampered email data.');
         }
 
-        $imagePath = null;
-        if ($request->hasFile('profile_image')) {
-            $imagePath = $request->file('profile_image')->store('profile_images', 'public');
-        }
-        $boqFilePath = null;
-        if ($request->hasFile('boqFile')) {
-            $boqFilePath = $request->file('boqFile')->store('boq_files', 'public');
-        }
+        // $project = ProjectInformation::findOrFail();
+        return view('customer.payment_page',['email' => $decryptedEmail]);
+    }
+   
+    public function razorpaypayment(Request $request){
+    //    print_r($_POST);die;
+        $amount = $request->input('amount');
+        $api = new Api(env('RAZORPAY_KEY'),env('secret key'));
+        $orderData = [
+            'receipt' => 'order_'.rand(1000,9999),
+            'amount' => $amount * 100,
+            'currency' => 'INR',
+            'payment_capture' => 1
+        ];
 
-        $project = ProjectInformation::create([
-            'full_name' => $validated['full_name'],
-            'phone_number' => $validated['phone_number'],
-            'email' => $validated['email'],
-            'password' => Hash::make($validated['password']),
-            'role' => $validated['role'],
-            'construction_type' => $validated['construction_type'],
-            'project_type' => $validated['project_type'],
-            'sub_categories' => $request->has('sub_categories') ? json_encode($request->sub_categories) : null,
-            'plot_ready' => $validated['plot_ready'],
-            'profile_image' => $imagePath,
-            'login_id' => 3,
-            'land_location' => $request->land_location,
-            'land_type' => $request->land_type,
-            'survey_no' => $request->survey_no,
-            'area' => $request->area,
-            'area_unit' => $request->area_unit,
-            'other_project_type' =>$request->other_project_type,
-            'has_arch_drawing' => $request->has('has_arch_drawing'),
-            'has_structural_drawing' => $request->has('has_structural_drawing'),
-            'boqFile' => $boqFilePath,
-            'boqCheckbox' => $request->boqCheckbox
-        ]);
+        $order = $api->order->create($orderData);
 
-        return response()->json([
-            'status' => 'success',
-            'message' => 'Saved successfully',
-            'project_id' => $project->id,
-        ]);
+        return view('customer.payment',['orderId' => $order["id"]]);
+
+
+ 
+
+
     }
 
     public function more_about_project(){

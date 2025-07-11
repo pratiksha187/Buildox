@@ -335,10 +335,10 @@ button.btn-primary:hover {
                <input class="form-control" type="file" id="boqFile" name="boqFile" accept=".xls,.xlsx">
             </div>
          </div>
-         {{-- <button class="btn btn-primary" type="submit">Next</button> --}}
+       
          <div class="text-center mt-4">
-  <button class="btn btn-primary" type="submit">Next</button>
-</div>
+            <button class="btn btn-primary" type="submit">Next</button>
+         </div>
 
       </form>
    </div>
@@ -355,67 +355,75 @@ button.btn-primary:hover {
      }
    });
    
+  
+
    $(document).ready(function () {
-     $('#projectForm').on('submit', function (e) {
-       e.preventDefault();
-   
-       let form = this;
-       let formData = new FormData(form);
-   
-       // Checkbox value
-       formData.set('plot_ready', $('#plot_ready').is(':checked') ? 1 : 0);
-   
-       // Handle sub-categories
-       formData.delete('sub_categories[]');
-       $('input[name="sub_categories[]"]:checked').each(function () {
-         formData.append('sub_categories[]', $(this).val());
-       });
-   
-       $.ajax({
-         url: '{{ route('projectinfostore') }}',
-         method: 'POST',
-         data: formData,
-         processData: false,
-         contentType: false,
-         headers: {
-           'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-         },
-         success: function (response) {
-           if (response.status === 'success') {
-             alert(response.message);
-             $('#projectForm')[0].reset();
-             $('#construction_type').val(null).trigger('change');
-             $('#project_type').empty().append('<option value="">Select Project Type</option>');
-             $('#sub_categories').empty();
-             $('#sub_categories_container').hide();
-             $('#project_id').val(response.project_id);
-             window.location.href = '/project-details/' + response.project_id;
-           }
-         },
-         error: function (xhr) {
-           if (xhr.status === 409 && xhr.responseJSON.status === 'exists') {
-             alert(xhr.responseJSON.message);
-             return;
-           }
-   
-           const errors = xhr.responseJSON.errors;
-           if (errors) {
-             $('.is-invalid').removeClass('is-invalid');
-             $('.invalid-feedback').remove();
-   
-             $.each(errors, function (field, messages) {
-               const inputField = $('#' + field);
-               inputField.addClass('is-invalid');
-               inputField.after('<div class="invalid-feedback">' + messages.join('<br>') + '</div>');
-             });
-           } else {
-             alert('An unexpected error occurred. Please try again.');
-           }
-         }
-       });
-     });
-   
+      $('#projectForm').on('submit', function (e) {
+         e.preventDefault();
+
+         let form = this;
+         let formData = new FormData(form);
+
+         // Set checkbox value
+         formData.set('plot_ready', $('#plot_ready').is(':checked') ? 1 : 0);
+
+         // Set sub-categories
+         formData.delete('sub_categories[]');
+         $('input[name="sub_categories[]"]:checked').each(function () {
+               formData.append('sub_categories[]', $(this).val());
+         });
+
+         $.ajax({
+               url: '{{ route("projectinfostore") }}',
+               method: 'POST',
+               data: formData,
+               processData: false,
+               contentType: false,
+               headers: {
+                  'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+               },
+               success: function (response) {
+                  if (response.status === 'payment_required') {
+                     alert(response.message);
+                     window.location.href = response.payment_url;
+                     return;
+                  }
+
+                  if (response.status === 'success') {
+                     alert(response.message);
+                     $('#projectForm')[0].reset();
+                     $('#construction_type').val(null).trigger('change');
+                     $('#project_type').empty().append('<option value="">Select Project Type</option>');
+                     $('#sub_categories').empty();
+                     $('#sub_categories_container').hide();
+                     $('#project_id').val(response.project_id);
+                     window.location.href = '/project-details/' + response.project_id;
+                  }
+               },
+               error: function (xhr) {
+                  if (xhr.status === 409 && xhr.responseJSON.status === 'exists') {
+                     alert(xhr.responseJSON.message);
+                     return;
+                  }
+
+                  const errors = xhr.responseJSON.errors;
+                  if (errors) {
+                     $('.is-invalid').removeClass('is-invalid');
+                     $('.invalid-feedback').remove();
+
+                     $.each(errors, function (field, messages) {
+                           const inputField = $('#' + field);
+                           inputField.addClass('is-invalid');
+                           inputField.after('<div class="invalid-feedback">' + messages.join('<br>') + '</div>');
+                     });
+                  } else {
+                     alert('An unexpected error occurred. Please try again.');
+                  }
+               }
+         });
+      });
    });
+
 </script>
 <script>
    const boqCheckbox = document.getElementById('boqCheckbox');

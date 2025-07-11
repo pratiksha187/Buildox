@@ -1,49 +1,64 @@
+@extends('layouts.app')
+@section('title', 'Project Inquiry')
 
-<div class="max-w-3xl mx-auto p-6 bg-white rounded-xl shadow mt-10">
-  <h2 class="text-2xl font-bold mb-2">Tell Us About Your Project</h2>
-  <p class="text-gray-600 mb-6">Don't worry if you don't have all the details. Our team will call you to discuss your project and help finalize the details.</p>
+@section('content')
 
-  <!-- Message container -->
-  <div id="message" class="mb-4 text-sm font-medium hidden"></div>
+<!-- Bootstrap & Icons -->
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+<link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
 
-  <form id="inquiryForm" class="space-y-6">
-    @csrf
-    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-      <div>
-        <label class="block mb-1 font-medium">Your Name</label>
-        <input type="text" name="name" id="name" class="w-full border border-gray-300 rounded-lg px-4 py-2" />
+<div class="container my-5">
+  <div class="max-w-3xl mx-auto bg-white rounded-4 shadow-sm p-5">
+
+    <h2 class="fs-3 fw-bold mb-2">Tell Us About Your Project</h2>
+    <p class="text-muted mb-4">
+      Don't worry if you don't have all the details. Our team will call you to discuss your project and help finalize the details.
+    </p>
+
+    <!-- Message container -->
+    <div id="message" class="alert d-none" role="alert"></div>
+
+    <form id="inquiryForm" class="row g-4">
+      @csrf
+
+      <!-- Name & Phone -->
+      <div class="col-md-6">
+        <label for="name" class="form-label fw-medium">Your Name</label>
+        <input type="text" name="name" id="name" class="form-control" />
       </div>
-      <div>
-        <label class="block mb-1 font-medium">Phone Number</label>
-        <input type="tel" name="phone" id="phone" class="w-full border border-gray-300 rounded-lg px-4 py-2" />
+      <div class="col-md-6">
+        <label for="phone" class="form-label fw-medium">Phone Number</label>
+        <input type="tel" name="phone" id="phone" class="form-control" />
       </div>
-    </div>
 
-    <div>
-      <label class="block mb-1 font-medium">Email Address</label>
-      <input type="email" name="email" id="email" class="w-full border border-gray-300 rounded-lg px-4 py-2" />
-    </div>
+      <!-- Email -->
+      <div class="col-12">
+        <label for="email" class="form-label fw-medium">Email Address</label>
+        <input type="email" name="email" id="email" class="form-control" />
+      </div>
 
-    <div>
-      <label class="block mb-1 font-medium">Project Type</label>
-      <select name="project_type" id="project_type" class="w-full border border-gray-300 rounded-lg px-4 py-2 bg-white">
-        <option>Select project type</option>
-        <option>Residential</option>
-        <option>Commercial</option>
-        <option>Renovation</option>
-      </select>
-    </div>
+      <!-- Project Type -->
+      <div class="col-12">
+        <label for="project_type" class="form-label fw-medium">Project Type</label>
+        <select name="project_type" id="project_type" class="form-select">
+          <option selected disabled>Select project type</option>
+          <option>Residential</option>
+          <option>Commercial</option>
+          <option>Renovation</option>
+        </select>
+      </div>
 
-    <div>
-      <label class="block mb-1 font-medium">Project Brief</label>
-      <textarea name="project_brief" id="project_brief" class="w-full border border-gray-300 rounded-lg px-4 py-2 h-32 resize-none"></textarea>
-    </div>
+      <!-- Project Brief -->
+      <div class="col-12">
+        <label for="project_brief" class="form-label fw-medium">Project Brief</label>
+        <textarea name="project_brief" id="project_brief" rows="5" class="form-control" placeholder="Share a few details about your project..."></textarea>
+      </div>
 
-    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-      <div>
-        <label class="block mb-1 font-medium">Best Time to Call You</label>
-        <select name="preferred_day" id="preferred_day" class="w-full border border-gray-300 rounded-lg px-4 py-2 bg-white">
-          <option>Select day</option>
+      <!-- Preferred Day & Time -->
+      <div class="col-md-6">
+        <label for="preferred_day" class="form-label fw-medium">Best Day to Call You</label>
+        <select name="preferred_day" id="preferred_day" class="form-select">
+          <option selected disabled>Select day</option>
           <option>Monday</option>
           <option>Tuesday</option>
           <option>Wednesday</option>
@@ -51,23 +66,28 @@
           <option>Friday</option>
         </select>
       </div>
-      <div>
-        <label class="block mb-1 font-medium">Select Time</label>
-        <select name="preferred_time" id="preferred_time" class="w-full border border-gray-300 rounded-lg px-4 py-2 bg-white">
-          <option>Select time</option>
+      <div class="col-md-6">
+        <label for="preferred_time" class="form-label fw-medium">Preferred Time</label>
+        <select name="preferred_time" id="preferred_time" class="form-select">
+          <option selected disabled>Select time</option>
           <option>10:00 AM</option>
           <option>12:00 PM</option>
           <option>3:00 PM</option>
           <option>5:00 PM</option>
         </select>
       </div>
-    </div>
 
-    <div class="flex justify-between mt-6">
-      <button type="button" class="px-5 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300">Back</button>
-      <button type="submit" class="px-6 py-2 bg-indigo-600 text-white font-semibold rounded-lg hover:bg-indigo-700">Submit Request</button>
-    </div>
-  </form>
+      <!-- Submit Buttons -->
+      <div class="col-12 d-flex justify-content-between mt-4">
+        <button type="button" class="btn btn-secondary">
+          <i class="bi bi-arrow-left"></i> Back
+        </button>
+        <button type="submit" class="btn btn-primary">
+          Submit Request <i class="bi bi-send ms-1"></i>
+        </button>
+      </div>
+    </form>
+  </div>
 </div>
 
 <!-- AJAX Script -->
@@ -79,7 +99,7 @@
     const formData = new FormData(form);
     const messageBox = document.getElementById("message");
 
-    fetch("{{ route('project.inquiry.store') }}", {
+    fetch("{{ route('projectinquiry') }}", {
       method: "POST",
       headers: {
         'X-CSRF-TOKEN': document.querySelector('input[name="_token"]').value
@@ -88,20 +108,23 @@
     })
     .then(res => res.json())
     .then(data => {
-      messageBox.classList.remove("hidden");
+      messageBox.classList.remove("d-none", "alert-danger", "alert-success");
+
       if (data.success) {
         form.reset();
-        messageBox.classList.add("text-green-600", "bg-green-100", "p-3");
+        messageBox.classList.add("alert", "alert-success");
         messageBox.textContent = data.message;
       } else {
-        messageBox.classList.add("text-red-600", "bg-red-100", "p-3");
+        messageBox.classList.add("alert", "alert-danger");
         messageBox.innerHTML = Object.values(data.errors).map(e => `<div>${e}</div>`).join('');
       }
     })
     .catch(error => {
-      messageBox.classList.remove("hidden");
-      messageBox.classList.add("text-red-600", "bg-red-100", "p-3");
+      messageBox.classList.remove("d-none");
+      messageBox.classList.add("alert", "alert-danger");
       messageBox.textContent = "Something went wrong. Please try again.";
     });
   });
 </script>
+
+@endsection

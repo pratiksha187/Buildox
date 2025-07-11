@@ -6,8 +6,11 @@
     <a href="#privacy" style="color: #CCCCCC; margin: 0 10px; text-decoration: none;">Privacy Policy</a>
     |
     <a href="#terms" style="color: #CCCCCC; margin: 0 10px; text-decoration: none;">Terms of Service</a>
+    |
+    <a href="{{ route('need_help') }}" style="color: #CCCCCC; margin: 0 10px; text-decoration: none;">Need Help?</a>
   </div>
 </footer>
+
 
   <!-- Bootstrap JS -->
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
