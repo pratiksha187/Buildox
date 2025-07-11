@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+
   <meta charset="UTF-8">
   <title>@yield('title', 'Dashboard')</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -10,6 +11,17 @@
   <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
 
   <script src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js" defer></script>
+  <style>
+     .brand {
+      font-size: 24px;
+      font-weight: bold;
+    }
+
+    .brand span {
+      color: #f25c05;
+    }
+
+    </style>
 </head>
 
 <body class="flex bg-gray-100 text-gray-800">
@@ -23,7 +35,8 @@
   >
     <!-- Top Title and Toggle Button -->
     <div class="flex items-center justify-between px-4 py-4 border-b border-gray-700">
-      <span class="text-2xl font-bold" x-show="sidebarOpen">BuildOX</span>
+      {{-- <span class="text-2xl font-bold" x-show="sidebarOpen">BuildOX</span> --}}
+      <div class="brand">CONSTRUCT<span>KARO</span></div>
       
     <button 
         class="p-1 rounded hover:bg-gray-800"

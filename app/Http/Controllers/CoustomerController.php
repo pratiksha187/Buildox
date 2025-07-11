@@ -284,8 +284,21 @@ class CoustomerController extends Controller
     }
 
     public function vendor_details(){
+
         $project_id = session('project_id');
-        return view('customer.vendor_bujet');
+         $get_project_det = DB::table('projects_details')
+                            ->where('id', $project_id)
+                            ->get();
+        $firstProject = $get_project_det->first();
+
+        if (!$firstProject) {
+            return redirect()->back()->with('error', 'Project not found.');
+        }
+
+        $proj_data = DB::table('project_information')
+            ->where('id', $firstProject->project_id)
+            ->first();
+        return view('customer.vendor_bujet',compact('proj_data'));
     }
 
     public function vendor_details_data(Request $request)

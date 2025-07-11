@@ -1,7 +1,8 @@
-@extends('layouts.project.app')
+@extends('layouts.app')
 @section('title', 'Project Information')
 @section('content')
 <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+
 <style>
    .form-section {
    background-color: #f9f9fb;
@@ -81,7 +82,119 @@
       display: flex;
       align-items: center;
     }
-</style>
+   :root {
+  --primary-color: #1b2b3b;    /* Dark Blue */
+  --accent-color:  #f04e23;    /* Bright Orange */
+  --bg-gradient-start: #e6f7f9;  /* Light Blue */
+  --bg-gradient-end:   #fef8ed;  /* Creamy Beige */
+  --text-dark: #333;
+  --text-light: #fff;
+  --input-border: #ced4da;
+}
+
+   body {
+  font-family: 'Segoe UI', sans-serif;
+  background: linear-gradient(to right, var(--bg-gradient-start), var(--bg-gradient-end));
+  margin: 0;
+  padding: 0;
+  color: var(--text-dark);
+}
+
+.navbar {
+  background-color: var(--primary-color);
+  padding: 1rem 2rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.navbar a {
+  color: var(--text-light);
+  margin-left: 1.5rem;
+  text-decoration: none;
+  font-weight: 500;
+  transition: color 0.3s;
+}
+
+.navbar a:hover {
+  color: var(--accent-color);
+}
+
+.logo {
+  font-size: 1.5rem;
+  font-weight: bold;
+  color: var(--text-light);
+}
+
+.logo span {
+  color: var(--accent-color);
+}
+
+/* Form Container */
+.form-section {
+  background-color: #fff;
+  border-radius: 12px;
+  padding: 40px;
+  margin: 3rem auto;
+  box-shadow: 0 0 25px rgba(0,0,0,0.05);
+}
+
+/* Title */
+.form-title-wrapper h4 {
+  font-weight: 600;
+  font-size: 2rem;
+  color: var(--primary-color);
+}
+
+/* Inputs */
+input.form-control, select.form-select {
+  border: 1px solid var(--input-border);
+  border-radius: 8px;
+  padding: 10px 12px;
+  transition: border-color 0.3s ease;
+}
+
+input.form-control:focus, select.form-select:focus {
+  border-color: var(--accent-color);
+  box-shadow: 0 0 0 0.15rem rgba(240, 78, 35, 0.25);
+}
+
+/* Button */
+button.btn-primary {
+  background: var(--accent-color);
+  border: none;
+  font-size: 1.1rem;
+  padding: 10px 24px;
+  border-radius: 8px;
+  color: white;
+  transition: background-color 0.3s ease;
+}
+
+button.btn-primary:hover {
+  background-color: #c9401b;
+}
+
+/* Custom Switch */
+.form-switch.custom-switch .form-check-input {
+  background-color: #ccc;
+  width: 2.5em;
+  height: 1.4em;
+  border-radius: 2em;
+}
+
+.form-switch.custom-switch .form-check-input:checked {
+  background-color: var(--accent-color);
+}
+
+#plotDetailsSection {
+  background: #f9f9fb;
+  padding: 1.5rem;
+  border-left: 5px solid var(--accent-color);
+  border-radius: 10px;
+  margin-top: 1rem;
+}
+
+   </style>
 <div class="container my-5">
    <div class="form-section shadow-sm">
       <div class="form-title-wrapper">
@@ -156,16 +269,13 @@
                <div id="sub_categories" name="sub_categories" class="form-check d-flex flex-column gap-2 mt-2"></div>
             </div>
          </div>
-         {{-- <div class="form-check form-switch mb-4">
-            <input class="form-check-input" type="checkbox" id="plot_ready" name="plot_ready">
-            <label class="form-check-label" for="plot_ready">Do you have your plot/site ready?</label>
-         </div> --}}
-           <div class="center-page">
-    <div class="form-check form-switch custom-switch custom-form-group">
-      <input class="form-check-input" type="checkbox" id="plot_ready" name="plot_ready">
-      <label class="form-check-label" for="plot_ready">Do you have your plot/site ready?</label>
-    </div>
-  </div>
+         
+         <div class="center-page">
+            <div class="form-check form-switch custom-switch custom-form-group">
+               <input class="form-check-input" type="checkbox" id="plot_ready" name="plot_ready">
+               <label class="form-check-label" for="plot_ready">Do you have your plot/site ready?</label>
+            </div>
+         </div>
 
          <div id="plotDetailsSection" style="display: none;">
             <div class="row mb-3">
@@ -225,7 +335,11 @@
                <input class="form-control" type="file" id="boqFile" name="boqFile" accept=".xls,.xlsx">
             </div>
          </div>
-         <button class="btn btn-primary" type="submit">Next</button>
+         {{-- <button class="btn btn-primary" type="submit">Next</button> --}}
+         <div class="text-center mt-4">
+  <button class="btn btn-primary" type="submit">Next</button>
+</div>
+
       </form>
    </div>
 </div>

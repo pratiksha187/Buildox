@@ -1,15 +1,13 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Select Your Service Type</title>
-  <script src="https://cdn.tailwindcss.com"></script>
-  <meta name="csrf-token" content="{{ csrf_token() }}">
-</head>
-<body class="bg-gray-50 min-h-screen flex items-center justify-center">
+@extends('layouts.vendor.app')
 
-  <div class="bg-white p-8 rounded-2xl shadow-md max-w-xl w-full">
+@section('title', 'Select Your Role')
+
+@section('content')
+<title>Select Your Service Type</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<meta name="csrf-token" content="{{ csrf_token() }}">
+
+  <div class="bg-white p-8 rounded-2xl shadow-md w-full">
     <h2 class="text-2xl font-bold text-gray-900 mb-2">Select Your Service Type</h2>
     <p class="text-gray-600 mb-6">Choose the category that best describes your agency. Then select the services you provide.</p>
 
@@ -155,5 +153,5 @@
     });
   </script>
 
-</body>
-</html>
+@endsection
+

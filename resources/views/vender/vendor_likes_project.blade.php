@@ -1,12 +1,9 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="csrf-token" content="{{ csrf_token() }}">
-  
-  <title>Explore Like Projects</title>
+@extends('layouts.vendor.app')
 
-  <!-- Fonts & CSS -->
+@section('title', 'Verification Pending | ConstructKaro')
+
+@section('content')
+<!-- Styles -->
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdn.datatables.net/1.13.5/css/dataTables.bootstrap5.min.css"/>
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css">
@@ -14,9 +11,63 @@
   <style>
     body {
       font-family: 'Inter', sans-serif;
+      background: #f9fafb;
+      color: #0B2240; /* Dark Navy Blue for text */
     }
     .table td, .table th {
       vertical-align: middle;
+    }
+
+    /* Custom color scheme */
+    h3.text-primary {
+      color: #FF6600 !important; /* Logo Orange */
+    }
+
+    .btn-primary {
+      background-color: #FF6600;
+      border-color: #FF6600;
+      color: #fff;
+      transition: background-color 0.3s ease;
+    }
+    .btn-primary:hover, .btn-primary:focus {
+      background-color: #e65c00;
+      border-color: #e65c00;
+      color: #fff;
+    }
+
+    .btn-outline-secondary {
+      color: #0B2240;
+      border-color: #0B2240;
+      transition: background-color 0.3s ease, color 0.3s ease;
+    }
+    .btn-outline-secondary:hover, .btn-outline-secondary:focus {
+      background-color: #0B2240;
+      color: #fff;
+    }
+
+    .modal-header.bg-primary {
+      background-color: #FF6600 !important; /* orange header */
+    }
+
+    .modal-header.bg-primary .btn-close {
+      filter: brightness(0) invert(1); /* white close button */
+    }
+
+    /* Badge colors matching logo colors */
+    .badge.bg-success {
+      background-color: #0B2240;
+      color: #fff;
+    }
+
+    .badge.bg-warning {
+      background-color: #FF6600;
+      color: #fff;
+    }
+
+    /* Customize the filter form labels */
+    label.form-label {
+      color: #0B2240;
+      font-weight: 600;
     }
   </style>
 </head>
@@ -124,7 +175,7 @@
             </div>
           </div>
 
-          <button type="submit" class="btn btn-success mt-4">Upload All Files</button>
+          <button type="submit" class="btn btn-success mt-4" style="background-color:#0B2240; border-color:#0B2240;">Upload All Files</button>
         </form>
       </div>
     </div>
@@ -168,7 +219,7 @@ $(document).ready(function () {
         orderable: false,
         searchable: false,
         render: function (data, type, row) {
-          return `<button class="btn btn-outline-primary btn-sm view-btn" data-id="${row.id}">👁️ View</button>`;
+          return `<button class="btn btn-outline-primary btn-sm view-btn" data-id="${row.id}" style="color:#FF6600; border-color:#FF6600;">👁️ View</button>`;
         }
       }
     ]
@@ -243,6 +294,4 @@ document.getElementById('documentUploadForm').addEventListener('submit', functio
     });
 });
 </script>
-
-</body>
-</html>
+@endsection

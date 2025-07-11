@@ -1,23 +1,88 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="csrf-token" content="{{ csrf_token() }}">
-  <title>Explore Projects</title>
+@extends('layouts.vendor.app')
 
-  <!-- Fonts & CSS -->
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="https://cdn.datatables.net/1.13.5/css/dataTables.bootstrap5.min.css"/>
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css">
+@section('title', 'List of Project | ConstructKaro')
 
-  <style>
-    body {
-      font-family: 'Inter', sans-serif;
-    }
-    .table td, .table th {
-      vertical-align: middle;
-    }
-  </style>
+@section('content')
+<!-- Fonts & CSS -->
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.datatables.net/1.13.5/css/dataTables.bootstrap5.min.css"/>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css">
+
+<style>
+  body {
+    font-family: 'Inter', sans-serif;
+    background: #f8f9fa;
+    color: #0B2240;
+  }
+
+  .table td, .table th {
+    vertical-align: middle;
+  }
+
+  h3.text-primary {
+    color: #FF6600 !important;
+  }
+
+  .btn-primary {
+    background-color: #FF6600;
+    border-color: #FF6600;
+    color: #fff;
+  }
+  .btn-primary:hover {
+    background-color: #e65c00;
+    border-color: #e65c00;
+  }
+
+  .btn-outline-secondary {
+    color: #0B2240;
+    border-color: #0B2240;
+  }
+  .btn-outline-secondary:hover {
+    background-color: #0B2240;
+    color: #fff;
+  }
+
+  .btn-outline-danger {
+    color: #FF6600;
+    border-color: #FF6600;
+  }
+  .btn-outline-danger:hover {
+    background-color: #FF6600;
+    color: #fff;
+  }
+
+  .btn-outline-primary {
+    color: #FF6600;
+    border-color: #FF6600;
+  }
+  .btn-outline-primary:hover {
+    background-color: #FF6600;
+    color: #fff;
+  }
+
+  .modal-header.bg-primary {
+    background-color: #FF6600 !important;
+  }
+
+  .modal-header.bg-primary .btn-close {
+    filter: brightness(0) invert(1);
+  }
+
+  .badge.bg-success {
+    background-color: #0B2240;
+    color: #fff;
+  }
+
+  .badge.bg-warning {
+    background-color: #FF6600;
+    color: #fff;
+  }
+
+  label.form-label {
+    color: #0B2240;
+    font-weight: 600;
+  }
+</style>
 </head>
 <body class="bg-light">
 
@@ -29,7 +94,9 @@
           <i class="bi bi-arrow-left"></i> Back
         </a>
       </div>
+
       <h3 class="mb-4 text-primary">🔍 Explore Projects</h3>
+
       <form id="filterForm" class="row g-3 mb-4">
         <div class="col-md-4">
           <label class="form-label fw-semibold">Project Type</label>
@@ -44,6 +111,7 @@
           <button type="button" id="resetBtn" class="btn btn-outline-secondary w-50">♻️ Reset</button>
         </div>
       </form>
+
       <div class="table-responsive">
         <table id="projectsTable" class="table table-hover table-bordered align-middle">
           <thead class="table-light">
@@ -72,7 +140,7 @@
       <div class="modal-body">
         <p><strong>Project Name:</strong> <span id="modalProjectName"></span></p>
         <p><strong>Budget:</strong> <span id="modalBudget" class="badge bg-success text-white"></span></p>
-        <p><strong>Timeline:</strong> <span id="modalTimeline" class="badge bg-warning text-dark"></span></p>
+        <p><strong>Timeline:</strong> <span id="modalTimeline" class="badge bg-warning text-white"></span></p>
       </div>
     </div>
   </div>
@@ -86,7 +154,6 @@
 
 <script>
 $(document).ready(function () {
-  // CSRF for Laravel AJAX
   $.ajaxSetup({
     headers: {
       'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
@@ -129,19 +196,18 @@ $(document).ready(function () {
     ]
   });
 
-  // Filter form
+  // Filter
   $('#filterForm').on('submit', function (e) {
     e.preventDefault();
     table.draw();
   });
 
-  // Reset filters
   $('#resetBtn').on('click', function () {
     $('#filterForm')[0].reset();
     table.draw();
   });
 
-  // Like project
+  // Like
   $('#projectsTable').on('click', '.like-btn', function () {
     const projectId = $(this).data('id');
 
@@ -162,10 +228,10 @@ $(document).ready(function () {
     });
   });
 
-  // View project details
+  // View
   $('#projectsTable').on('click', '.view-btn', function () {
     const projectId = $(this).data('id');
-// alert(projectId);
+
     $.ajax({
       url: `/project-details-vendor/${projectId}`,
       method: 'GET',
@@ -184,6 +250,4 @@ $(document).ready(function () {
   });
 });
 </script>
-
-</body>
-</html>
+@endsection
