@@ -252,10 +252,6 @@ class CoustomerController extends Controller
 
         return view('customer.payment',['orderId' => $order["id"]]);
 
-
- 
-
-
     }
 
     public function more_about_project(){

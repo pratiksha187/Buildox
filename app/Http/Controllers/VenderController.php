@@ -154,7 +154,7 @@ class VenderController extends Controller
             'esic_number' => 'nullable|string',
             'pf_code' => 'nullable|string',
             'msme_registered' => 'required|string',
-            'pan_aadhar_seeded' => 'required|string',
+            // 'pan_aadhar_seeded' => 'required|string',
             'bank_name' => 'required|string',
             'account_number' => 'required|string',
             'ifsc_code' => 'required|string',
