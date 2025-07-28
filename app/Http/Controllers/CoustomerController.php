@@ -320,7 +320,6 @@ class CoustomerController extends Controller
         session(['project_id' => $request->project_id]);
         return response()->json(['success' => true]);
     }
-
     public function conformation_page(Request $request){
         $project_id = session('project_id');
         if (!$project_id) {
